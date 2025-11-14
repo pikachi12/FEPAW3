@@ -96,7 +96,7 @@ export default function RegisterPage() {
               type="submit"
               className="mt-2 w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 rounded-md transition"
             >
-              Register
+              Login
             </button>
           </form>
 
