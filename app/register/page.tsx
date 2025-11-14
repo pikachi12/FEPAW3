@@ -3,8 +3,50 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Lock, ArrowRight } from "react-feather"; 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name] = useState("");   // optional
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email, 
+          password,
+          name 
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Registration failed");
+        setLoading(false);
+        return;
+      }
+
+      // Success → Redirect to OTP page
+      router.push(`/authentication?email=${email}`);
+
+    } catch (err) {
+      alert("Failed to connect to server.");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-gray-900">
       {/* Background Image */}
@@ -20,16 +62,14 @@ export default function RegisterPage() {
       <div className="absolute inset-0 bg-black/40" />
 
       {/* Back link */}
-        <div className="absolute top-8 right-10 text-sm text-white hover:underline flex items-center gap-1">
-            <Link href="/" className="flex items-center gap-1">
-                Back to main page <ArrowRight size={14} />
-            </Link>
-        </div>
+      <div className="absolute top-8 right-10 text-sm text-white hover:underline flex items-center gap-1">
+        <Link href="/" className="flex items-center gap-1">
+          Back to main page <ArrowRight size={14} />
+        </Link>
+      </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6">
-        
-
 
         {/* Logo & Title */}
         <div className="flex flex-col items-center mb-8">
@@ -57,46 +97,51 @@ export default function RegisterPage() {
             Complete these form to <span className="font-medium text-gray-700">register</span> your account
           </p>
 
-          <form className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
             {/* Email Field */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                </label>
-                <div className="relative">
-                    <Mail className="absolute left-3 top-2.5 text-gray-400" size={18} /> {/* Feather Icon */}
-                    <input
-                    type="email"
-                    placeholder="@mail.ugm.ac.id or @ugm.ac.id"
-                    className="w-full rounded-md border border-gray-300 pl-9 pr-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                </div>
-                <p className="text-xs text-gray-400 mt-1">
-                    Please use your university domain mail
-                </p>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <input
+                  type="email"
+                  placeholder="@mail.ugm.ac.id or @ugm.ac.id"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full rounded-md border border-gray-300 pl-9 pr-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
             </div>
 
             {/* Password Field */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
-                </label>
-                <div className="relative">
-                    <Lock className="absolute left-3 top-2.5 text-gray-400" size={18} /> {/* Feather Icon */}
-                    <input
-                    type="password"
-                    placeholder="fatimah@badr.co.id"
-                    className="w-full rounded-md border border-gray-300 pl-9 pr-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                </div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <input
+                  type="password"
+                  placeholder="your password"
+                  value={password}
+                  required
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 pl-9 pr-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
             </div>
 
             {/* Register Button */}
             <button
               type="submit"
+              disabled={loading}
               className="mt-2 w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 rounded-md transition"
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </button>
           </form>
 
