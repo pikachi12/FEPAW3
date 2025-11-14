@@ -6,7 +6,7 @@ import { Mail, Lock, ArrowRight } from "react-feather";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function RegisterPage() {
+export default function loginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
