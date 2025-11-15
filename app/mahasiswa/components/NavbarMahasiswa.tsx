@@ -7,6 +7,8 @@ import ProfileModal from "./ProfileModal";
 import ReportDataModal from "./ReportDataModal";
 import AddModal from "./AddModal";
 import NotificationModal from "./NotificationModal";
+import type { NotificationItem } from "./NotificationModal";
+
 
 export default function NavbarMahasiswa() {
   const [open, setOpen] = useState(false);
@@ -15,7 +17,7 @@ export default function NavbarMahasiswa() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openNotif, setOpenNotif] = useState(false);
 
-  const notificationsData = [
+  const notificationsData: NotificationItem[] = [
     {
       date: "21/03/2025",
       judul: "SmartWaste: IoT-Based Waste Management System for Urban Areas",

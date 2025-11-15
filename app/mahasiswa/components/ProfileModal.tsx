@@ -1,5 +1,5 @@
 "use client";
-import { X, User, Bell, LogOut } from "react-feather";
+import { X, User, Hash, Grid, Calendar, Users, Link } from "react-feather";
 import React from "react";
 
 interface ProfileModalProps {
@@ -36,29 +36,34 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd}: Profil
           <div className="space-y-3 text-sm">
             {/* ITEM */}
             <div className="flex gap-3">
-              <span className="w-32 text-gray-500">📌 Nama Tim</span>
+              <Hash size={18} className="text-gray-700" />
+              <span className="w-32 text-gray-500" >Tema</span>
               <span className="text-gray-800">Pengolahan Sampah</span>
             </div>
 
             <div className="flex gap-3">
-              <span className="w-32 text-gray-500">🏷 Batch</span>
+              <Grid size={18} className="text-gray-700" />
+              <span className="w-32 text-gray-500">Batch</span>
               <span className="text-gray-800">FoE 2023</span>
             </div>
 
             <div className="flex gap-3">
-              <span className="w-32 text-gray-500">📅 Tahun</span>
+              <Calendar size={18} className="text-gray-700" />
+              <span className="w-32 text-gray-500">Tahun</span>
               <span className="text-gray-800">2023</span>
             </div>
 
             <div className="flex gap-3 items-start">
-              <span className="w-32 text-gray-500">👤 Nama Ketua</span>
+              <User size={18} className="text-gray-700" />
+              <span className="w-32 text-gray-500">Nama Ketua</span>
               <span className="text-gray-800 leading-relaxed">
                 Raka Aditya Putra (22/531752/SV/1234, Teknologi Informasi)
               </span>
             </div>
 
             <div className="flex gap-3 items-start">
-              <span className="w-32 text-gray-500">👥 Nama Anggota</span>
+              <Users size={18} className="text-gray-700" />
+              <span className="w-32 text-gray-500">Nama Anggota</span>
               <div className="text-gray-800 leading-relaxed space-y-1">
                 <p>1. Siti Nurlailah (22/987654/SV/9876, Teknik Elektro)</p>
                 <p>2. Rezha Prabowo (22/123456/SV/2222, Teknik Elektro)</p>
@@ -67,14 +72,16 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd}: Profil
             </div>
 
             <div className="flex gap-3 items-start">
-              <span className="w-32 text-gray-500">🧑‍🏫 Dosen Pembimbing</span>
+              <User size={18} className="text-gray-700" />
+              <span className="w-32 text-gray-500">Dosen Pembimbing</span>
               <span className="text-gray-800 leading-relaxed">
                 Dr. Rudi Santoso, S.T., M.Eng (197911112001)
               </span>
             </div>
 
             <div className="flex gap-3 items-start">
-              <span className="w-32 text-gray-500">📝 Pengalaman Tim</span>
+              <Link size={18} className="text-gray-700" />
+              <span className="w-32 text-gray-500">Pengalaman Tim</span>
               <span className="text-gray-800">-</span>
             </div>
           </div>

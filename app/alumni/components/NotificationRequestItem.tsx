@@ -62,10 +62,10 @@ const ActionFooter = ({
   return (
     <div className="flex justify-end pt-4">
       {status === "approved" && (
-        <span className="font-medium text-lg text-green-600">Approved</span>
+        <span className="font-medium text-sm text-green-600">Approved</span>
       )}
       {status === "declined" && (
-        <span className="font-medium text-lg text-red-600">Declined</span>
+        <span className="font-medium text-sm text-red-600">Declined</span>
       )}
     </div>
   );

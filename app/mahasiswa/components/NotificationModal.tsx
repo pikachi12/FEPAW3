@@ -1,7 +1,7 @@
 "use client";
 import { X, Calendar, FileText, File, Clipboard } from "react-feather";
 
-interface NotificationItem {
+export interface NotificationItem {
   date: string;
   judul: string;
   status: "Approved" | "Declined";
@@ -67,16 +67,16 @@ export default function NotificationModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-start px-4 pt-20">
-      <div className="bg-white w-full max-w-3xl rounded-xl shadow-lg relative"> {/* Removed p-6 here */}
+      <div className="bg-white w-full max-w-4xl rounded-xl shadow-lg relative"> {/* Removed p-6 here */}
 
         {/* Header - Notification Title and Close Button */}
         <div className="p-4 sm:p-6 pb-2 flex justify-between items-center">
-            <h2 className="text-lg font-medium text-gray-800">Notification</h2>
+            <p className="text-lm text-gray-500">Notification</p>
             <button
-                onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 p-1 -mr-1"
+              onClick={onClose}
+              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
             >
-                <X size={20} />
+              <X size={20} />
             </button>
         </div>
 
