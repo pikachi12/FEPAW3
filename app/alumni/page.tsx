@@ -1,7 +1,6 @@
 "use client";
-
 import { useState } from "react";
-import NavbarMahasiswa from "./components/NavbarMahasiswa";
+import NavbarAlumni from "./components/NavbarAlumni";
 import Hero from "../components/Hero";
 import FilterBar from "../components/FilterBar";
 import ProjectCard from "../components/ProjectCard";
@@ -14,7 +13,7 @@ interface Project {
   description: string;
 }
 
-export default function HomeMahasiswaPage() {
+export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const projects: Project[] = Array.from({ length: 12 }, (_, i) => ({
@@ -27,10 +26,8 @@ export default function HomeMahasiswaPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <NavbarMahasiswa />
-
+      <NavbarAlumni />
       <Hero />
-
       <FilterBar
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}

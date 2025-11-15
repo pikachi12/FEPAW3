@@ -6,33 +6,88 @@ import Link from "next/link";
 import ProfileModal from "./ProfileModal";
 import ReportDataModal from "./ReportDataModal";
 import AddModal from "./AddModal";
-import NotificationModal from "./NotificationModal";
+import AlumniNotificationModal from "./AlumniNotificationModal";
+import type { AlumniRequest } from "../types/types";
+
+// --- DATA DUMMY (Nanti ini didapat dari API) ---
+const dummyRequests: AlumniRequest[] = [
+  {
+    id: "req1",
+    date: "21/03/2025",
+    daysRemaining: 3,
+    teamName: "FO4 2025",
+    ketua: { name: "Raka Aditua", details: "(22/5123/TK/543)" },
+    anggota: [
+      { name: "Tri Nurtanto", details: "(22/5123/TK/543)" },
+      { name: "Dimar Fahlul", details: "(22/5123/TK/543)" },
+      { name: "Intan Mariam", details: "(22/5123/TK/543)" },
+    ],
+    dosen: { name: "Dr. Budi Santoso, S.T., M.Eng.", details: "(Dosen)" },
+    alasan:
+      "Tim kami mengajukan proyek SmartWaste... Kami juga berencana menganalisis fungsionalitas sistem...",
+    driveLink: "google.drive.com/...",
+    status: "pending", // Status Awal
+  },
+  {
+    id: "req2",
+    date: "20/03/2025",
+    daysRemaining: 2,
+    teamName: "Kreatif 2025",
+    ketua: { name: "Sarah Wijaya", details: "(22/5123/TK/543)" },
+    anggota: [{ name: "Budi Doremi", details: "(22/5123/TK/543)" }],
+    dosen: { name: "Dr. Budi Santoso, S.T., M.Eng.", details: "(Dosen)" },
+    alasan: "Proyek kami berfokus pada pengembangan AI untuk edukasi...",
+    driveLink: "google.drive.com/...",
+    status: "approved", // Contoh yang sudah di-approve
+  },
+  {
+    id: "req3",
+    date: "19/03/2025",
+    daysRemaining: 1,
+    teamName: "TechTitans",
+    ketua: { name: "Ahmad Jalal", details: "(22/5123/TK/543)" },
+    anggota: [{ name: "Citra Lestari", details: "(22/5123/TK/543)" }],
+    dosen: { name: "Dr. Budi Santoso, S.T., M.Eng.", details: "(Dosen)" },
+    alasan: "Analisis data besar untuk infrastruktur kota.",
+    driveLink: "google.drive.com/...",
+    status: "declined", // Contoh yang sudah di-decline
+  },
+];
+// --- END DATA DUMMY ---
 
 export default function NavbarMahasiswa() {
   const [open, setOpen] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   const [openReport, setOpenReport] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
-  const [openNotif, setOpenNotif] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [requests, setRequests] = useState<AlumniRequest[]>(dummyRequests);
 
-  const notificationsData = [
-    {
-      date: "21/03/2025",
-      judul: "SmartWaste: IoT-Based Waste Management System for Urban Areas",
-      status: "Approved",
-      driveLink: "google.drive.com/...",
-    },
-    {
-      date: "21/03/2025",
-      judul: "SmartWaste: IoT-Based Waste Management System for Urban Areas",
-      status: "Declined",
-    },
-    {
-      date: "21/03/2025",
-      judul: "SmartWaste: IoT-Based Waste Management System for Urban Areas",
-      status: "Declined",
-    },
-  ];
+  // Fungsi ini akan dipanggil oleh tombol "Approved"
+  const handleApproveRequest = (id: string) => {
+    console.log("Approving request:", id);
+    // TODO: Kirim data ke API di sini
+
+    // Update state secara lokal untuk mengubah UI
+    setRequests((currentRequests) =>
+      currentRequests.map((req) =>
+        req.id === id ? { ...req, status: "approved" } : req
+      )
+    );
+  };
+
+  // Fungsi ini akan dipanggil oleh tombol "Declined"
+  const handleDeclineRequest = (id: string) => {
+    console.log("Declining request:", id);
+    // TODO: Kirim data ke API di sini
+
+    // Update state secara lokal untuk mengubah UI
+    setRequests((currentRequests) =>
+      currentRequests.map((req) =>
+        req.id === id ? { ...req, status: "declined" } : req
+      )
+    );
+  };
 
   return (
     <header className="flex justify-between items-center py-4 px-8 border-b bg-white sticky top-0 z-20">
@@ -107,16 +162,21 @@ export default function NavbarMahasiswa() {
                 onClose={() => setOpenAdd(false)}
               />
 
-              <button onClick={() => setOpenNotif(true)} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition">
+              <button 
+              onClick={() => setIsModalOpen(true)} 
+              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition">
                 <Bell size={18} className="text-gray-700" />
                 <span className="text-gray-700 text-sm">Notification</span>
               </button>
 
-              <NotificationModal
-                isOpen={openNotif}
-                onClose={() => setOpenNotif(false)}
-                notifications={notificationsData}
-              />
+              {/* Modal Notifikasi */}
+                <AlumniNotificationModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    requests={requests}
+                    onApprove={handleApproveRequest}
+                    onDecline={handleDeclineRequest}
+                />
 
               <Link href="/"><button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition text-red-600">
                 <LogOut size={18} />
