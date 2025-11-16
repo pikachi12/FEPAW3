@@ -1,4 +1,9 @@
-export default function Hero() {
+interface HeroProps {
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+}
+
+export default function Hero({ searchTerm, setSearchTerm }: HeroProps) {
   return (
     <section className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 py-16 px-4">
       <div className="flex-1">
@@ -14,6 +19,8 @@ export default function Hero() {
             type="text"
             placeholder="What type of innovation inspires you most?"
             className="w-full border rounded-xl px-5 py-3 outline-none focus:ring-2 focus:ring-orange-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <span className="absolute right-3 top-3 text-gray-400">🔍</span>
         </div>

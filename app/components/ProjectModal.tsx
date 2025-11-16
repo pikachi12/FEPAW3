@@ -10,6 +10,10 @@ interface ProjectModalProps {
 }
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
+  const [alasan, setAlasan] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState("");
+
   if (!project) return null;
 
   // Menentukan status ketersediaan
@@ -23,8 +27,60 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     notAvailableReason = '(telah mendapatkan 3 request dalam 1 waktu)';
   }
 
+  const handleSubmit = async () => {
+  if (!alasan.trim()) return;
+
+  setIsSubmitting(true);
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/pilih-capstone`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        capstoneId: project.id,
+        alasan: alasan,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      // Ambil pesan error dari response
+      setIsSubmitting(false);
+      setSuccessMessage(data.message || "Gagal mengirim pengajuan.");
+      setTimeout(() => setSuccessMessage(""), 2500);
+      return;
+    }
+
+    setSuccessMessage("Pengajuan capstone Anda berhasil dikirim!");
+
+    setTimeout(() => {
+      setSuccessMessage("");
+      onClose(); // tutup modal
+    }, 1500);
+
+  } catch (error) {
+    console.error(error);
+
+    setSuccessMessage("Terjadi error, coba lagi.");
+    setTimeout(() => setSuccessMessage(""), 2500);
+
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
   return (
-    // Backdrop overlay
+    <>
+      {successMessage && (
+        <div className="fixed top-5 right-5 z-[9999] animate-fade-in">
+          <div className="bg-orange-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
+            <span className="font-semibold">Request Terkirim</span>
+            <p className="text-sm opacity-90">{successMessage}</p>
+          </div>
+        </div>
+      )}
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
       onClick={onClose}
@@ -98,11 +154,20 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             </div>
 
             <h3 className="mb-2 font-semibold text-gray-800">Hasil</h3>
-            <div className="mb-4 flex gap-4">
-              {/* Ganti dengan komponen Image dari Next.js jika perlu */}
-              <img src="/image-placeholder-1.jpg" alt="Hasil 1" className="h-24 w-24 rounded border object-cover" />
-              <img src="/image-placeholder-2.jpg" alt="Hasil 2" className="h-24 w-24 rounded border object-cover" />
-            </div>
+            {project.hasil && project.hasil.length > 0 ? (
+              <div className="mb-4 flex flex-wrap gap-4">
+                {project.hasil.map((url, index) => (
+                  <img
+                    key={index}
+                    src={url}
+                    alt={`Hasil ${index + 1}`}
+                    className="h-24 w-24 rounded border object-cover"
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 mb-4">Belum ada hasil yang tersedia.</p>
+            )}
 
             <h3 className="mb-2 font-semibold text-gray-800">Alasan Pengajuan</h3>
             <textarea
@@ -110,23 +175,31 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               rows={3}
               placeholder="Ketik di sini (max 100 kata)"
               disabled={!isAvailable} // Textarea juga di-disable jika not available
+              value={alasan}
+              onChange={(e) => setAlasan(e.target.value)}
             ></textarea>
             
             <div className="mt-6 flex justify-end">
               <button
-                className={`rounded-lg px-6 py-2 text-white font-medium
+                onClick={handleSubmit}
+                disabled={!isAvailable || isSubmitting}
+                className={`rounded-lg px-6 py-2 text-white font-medium flex items-center gap-2
                   ${isAvailable 
                     ? 'bg-orange-600 hover:bg-orange-700' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
-                disabled={!isAvailable} // Tombol dinonaktifkan jika status tidak 'Available'
               >
-                Submit Request
+                {isSubmitting ? (
+                  <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                ) : (
+                  "Submit Request"
+                )}
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -1,14 +1,22 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { isLoggedIn as checkLoggedIn, logout as logoutAuth } from "@/lib/auth";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     setIsLoggedIn(checkLoggedIn());
+
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      setRole(user.role); // pastikan backend kirim role
+    }
   }, []);
 
   const handleLogout = async () => {
@@ -50,8 +58,10 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link href="/dashboard">
-              <button className="text-gray-700 hover:text-black">Dashboard</button>
+            <Link href={`/${role ?? ""}`}>
+              <button className="text-gray-700 hover:text-black">
+                Dashboard
+              </button>
             </Link>
 
             <button

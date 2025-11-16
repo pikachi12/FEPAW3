@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { User, Bell, LogOut } from "react-feather";
 import Link from "next/link";
 import ProfileModal from "./ProfileModal";
@@ -16,25 +16,6 @@ export default function NavbarMahasiswa() {
   const [openReport, setOpenReport] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [openNotif, setOpenNotif] = useState(false);
-
-  const notificationsData: NotificationItem[] = [
-    {
-      date: "21/03/2025",
-      judul: "SmartWaste: IoT-Based Waste Management System for Urban Areas",
-      status: "Approved",
-      driveLink: "google.drive.com/...",
-    },
-    {
-      date: "21/03/2025",
-      judul: "SmartWaste: IoT-Based Waste Management System for Urban Areas",
-      status: "Declined",
-    },
-    {
-      date: "21/03/2025",
-      judul: "SmartWaste: IoT-Based Waste Management System for Urban Areas",
-      status: "Declined",
-    },
-  ];
 
   const getUserData = () => {
     const userStr = localStorage.getItem("user");
@@ -142,7 +123,7 @@ export default function NavbarMahasiswa() {
               <NotificationModal
                 isOpen={openNotif}
                 onClose={() => setOpenNotif(false)}
-                notifications={notificationsData}
+                notifications={[]}
               />
 
               <button onClick={handleLogout}
