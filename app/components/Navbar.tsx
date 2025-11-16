@@ -2,18 +2,30 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { isLoggedIn as checkLoggedIn, logout as logoutAuth } from "@/lib/auth";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token); // true kalau token ada
+    setIsLoggedIn(checkLoggedIn());
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login"; // redirect ke login
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
   };
 
   return (

@@ -92,6 +92,23 @@ export default function Sidebar() {
   // Di aplikasi nyata, Anda akan menggunakan `usePathname` untuk menentukan 'isActive'
   const currentPath = '/dashboard'; 
 
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
+  };
+
   return (
     <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col border-r border-gray-200 bg-white">
       {/* 1. Logo/Header */}
@@ -163,13 +180,13 @@ export default function Sidebar() {
           )}
 
         <div className="mb-4">
-          <Link
-            href="/sign-out"
+          <button
+            onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-md px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
           >
             <LogOut className="h-5 w-5" />
             <span>Sign Out</span>
-          </Link>
+          </button>
         </div>
           
         </ul>

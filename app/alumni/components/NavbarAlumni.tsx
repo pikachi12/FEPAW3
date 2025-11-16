@@ -89,6 +89,23 @@ export default function NavbarMahasiswa() {
     );
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
+  };
+
   return (
     <header className="flex justify-between items-center py-4 px-8 border-b bg-white sticky top-0 z-20">
       
@@ -178,10 +195,10 @@ export default function NavbarMahasiswa() {
                     onDecline={handleDeclineRequest}
                 />
 
-              <Link href="/"><button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition text-red-600">
+              <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition text-red-600">
                 <LogOut size={18} />
                 <span className="text-sm">Logout</span>
-              </button></Link>
+              </button>
             </div>
 
           </div>

@@ -36,6 +36,31 @@ export default function NavbarMahasiswa() {
     },
   ];
 
+  const getUserData = () => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      return JSON.parse(userStr);
+    }
+    return null;
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
+  };
+
   return (
     <header className="flex justify-between items-center py-4 px-8 border-b bg-white sticky top-0 z-20">
       
@@ -59,8 +84,8 @@ export default function NavbarMahasiswa() {
 
           {/* User info */}
           <div className="hidden sm:block text-left">
-            <p className="font-semibold text-gray-800">Hanifah Putri Ariani</p>
-            <p className="text-gray-500 text-sm">hanifahputriariani@mail.ugm.ac.id</p>
+            <p className="font-semibold text-gray-800">{getUserData()?.name}</p>
+            <p className="text-gray-500 text-sm">{getUserData()?.email}</p>
           </div>
         </button>
 
@@ -120,10 +145,11 @@ export default function NavbarMahasiswa() {
                 notifications={notificationsData}
               />
 
-              <Link href="/"><button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition text-red-600">
+              <button onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition text-red-600">
                 <LogOut size={18} />
                 <span className="text-sm">Logout</span>
-              </button></Link>
+              </button>
             </div>
 
           </div>

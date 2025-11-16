@@ -90,9 +90,10 @@ export default function OTPPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         // Kirim kode OTP yang sudah digabung
         body: JSON.stringify({ email, otp: otpCode }),
       }); 
@@ -105,9 +106,14 @@ export default function OTPPage() {
         return;
       }
 
-      alert("OTP verified! Your account is now active.");
-      // Ganti router.push dengan window.location.href
-      window.location.href = "/login";
+      // alert("OTP verified! Your account is now active.");
+
+      // Simpan token
+      localStorage.setItem("token", data.token);
+
+      // Redirect sesuai role
+      const role = data.user.role;
+      window.location.href = `/${role}`;
 
     } catch (err) {
       alert("Error connecting to server.");
@@ -121,7 +127,7 @@ export default function OTPPage() {
     setResendLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/resend-otp", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

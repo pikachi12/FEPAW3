@@ -1,4 +1,5 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import { X } from "react-feather";
 
 interface AddModalProps {
@@ -7,6 +8,23 @@ interface AddModalProps {
 }
 
 export default function AddModal({ isOpen, onClose }: AddModalProps) {
+  const [link, setLink] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setLink(null);
+  }, [isOpen]);
+
+  const submitLink = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/upload-cv`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ linkCVGabungan: link }),
+        credentials: "include", // Penting: untuk menerima cookie dari backend
+      });
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -33,6 +51,8 @@ export default function AddModal({ isOpen, onClose }: AddModalProps) {
 
         {/* Textarea */}
         <textarea
+          value={link || ""}
+          onChange={(e) => setLink(e.target.value)}
           className="
             w-full 
             border border-gray-300 
@@ -49,7 +69,7 @@ export default function AddModal({ isOpen, onClose }: AddModalProps) {
 
         {/* Submit Button */}
         <div className="mt-6 flex justify-end">
-          <button className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm">
+          <button onClick={submitLink} className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm">
             Submit Request
           </button>
         </div>

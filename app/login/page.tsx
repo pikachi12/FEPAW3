@@ -20,10 +20,11 @@ export default function loginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Penting: untuk menerima cookie dari backend
       });
 
       const data = await res.json();
@@ -34,11 +35,14 @@ export default function loginPage() {
         return;
       }
 
-      // Simpan token
+      // Simpan token di localStorage juga (untuk client-side access)
       localStorage.setItem("token", data.token);
 
-      // Redirect ke dashboard
-      router.push("/");
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redirect sesuai role
+      const role = data.user.role;
+      router.push(`/${role}`);
 
     } catch (error) {
       setErrorMsg("Gagal terhubung ke server");

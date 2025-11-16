@@ -1,5 +1,6 @@
 "use client";
 import { X } from "react-feather";
+import React, { useEffect, useState } from "react";
 
 interface ReportDataModalProps {
   isOpen: boolean;
@@ -7,6 +8,23 @@ interface ReportDataModalProps {
 }
 
 export default function ReportDataModal({ isOpen, onClose }: ReportDataModalProps) {
+  const [reason, setReason] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setReason(null);
+  }, [isOpen]);
+
+  const submitReason = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/report-issue`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description : reason }),
+        credentials: "include", // Penting: untuk menerima cookie dari backend
+      });
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -33,6 +51,8 @@ export default function ReportDataModal({ isOpen, onClose }: ReportDataModalProp
 
         {/* Textarea */}
         <textarea
+          value={reason || ""}
+          onChange={(e) => setReason(e.target.value)}
           className="
             w-full 
             border border-gray-300 
@@ -49,7 +69,7 @@ export default function ReportDataModal({ isOpen, onClose }: ReportDataModalProp
 
         {/* Submit Button */}
         <div className="mt-6 flex justify-end">
-          <button className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm">
+          <button onClick={submitReason} className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm">
             Submit Request
           </button>
         </div>
