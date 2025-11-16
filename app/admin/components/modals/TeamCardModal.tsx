@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 // Import tipe data TeamData
 import { type TeamData } from '@/lib/dummy-data'; 
+import Link from 'next/link';
 
 // Tipe untuk Props
 interface TeamCardModalProps {
@@ -110,11 +111,13 @@ export default function TeamCardModal({ isOpen, onClose, team }: TeamCardModalPr
           >
             Delete
           </button>
+          <Link href={`/admin/dashboard/capstone-teams/edit-team/${team.id}`}>
           <button
             className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700"
           >
             Edit
-          </button>
+          </button></Link>
+          
         </div>
       </div>
     </div>,

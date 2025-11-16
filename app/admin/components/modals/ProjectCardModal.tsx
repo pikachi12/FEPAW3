@@ -4,7 +4,8 @@ import { X } from 'react-feather';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 // Import tipe data ProjectData
-import { type ProjectData } from '@/app/admin/dashboard/capstone-projects/all-projects/page'; 
+import { type ProjectData } from '@/lib/dummy-data'; 
+import Link from 'next/link';
 
 // Tipe untuk Props
 interface ProjectCardModalProps {
@@ -110,6 +111,26 @@ export default function ProjectCardModal({ isOpen, onClose, project }: ProjectCa
                 ))}
               </div>
             </ModalSection>
+
+            {/* Footer Modal (Tombol Aksi) */}
+            <div className="flex-shrink-0 flex justify-end gap-3 border-t p-6">
+              <button
+                className="rounded-lg border border-red-600 bg-white px-5 py-2 text-sm font-semibold text-red-600 shadow-sm hover:bg-red-50"
+              >
+                Delete
+              </button>
+              
+              {/* --- PERUBAHAN DI SINI --- */}
+              {/* 2. Bungkus tombol 'Edit' dengan <Link> */}
+              <Link href={`/admin/dashboard/capstone-projects/edit-project/${project.id}`}>
+                <button
+                  className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700"
+                >
+                  Edit
+                </button>
+              </Link>
+              {/* --- AKHIR PERUBAHAN --- */}
+            </div>
 
           </div>
         </div>
