@@ -5,6 +5,7 @@ export interface TeamMember {
 }
 
 export interface AlumniRequest {
+  groupId: string; // ID grup untuk API
   id: string; // ID unik untuk key dan API call
   date: string;
   daysRemaining: number;
@@ -14,5 +15,5 @@ export interface AlumniRequest {
   dosen: TeamMember;
   alasan: string;
   driveLink: string;
-  status: "pending" | "approved" | "declined"; // Status ini PENTING
+  status: "pending" | "approved" | "declined" | "Diterima" | "Ditolak"; // Status ini PENTING
 }

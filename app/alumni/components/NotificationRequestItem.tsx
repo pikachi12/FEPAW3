@@ -34,7 +34,7 @@ const ActionFooter = ({
   onRequestDecline,
   onRequestApprove,
 }: {
-  status: "pending" | "approved" | "declined";
+  status: "pending" | "Diterima" | "Ditolak" | "approved" | "declined";
   onRequestDecline: () => void;
   onRequestApprove: () => void;
 }) => {
@@ -44,27 +44,30 @@ const ActionFooter = ({
       <div className="flex justify-end gap-3 pt-4">
         <button
           onClick={onRequestDecline}
-          className="px-6 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium"
+          className="px-6 py-2 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-50 text-sm font-medium"
         >
-          Declined
+          Decline
         </button>
         <button
           onClick={onRequestApprove}
           className="px-6 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 text-sm font-medium"
         >
-          Approved
+          Approve
         </button>
       </div>
     );
   }
 
-  // Jika status 'approved' atau 'declined', tampilkan status
+  // Jika status 'Diterima'/'approved' atau 'Ditolak'/'declined', tampilkan status
+  let displayStatus: string = status;
+  if (status === "Diterima" || status === "approved") displayStatus = "Approved";
+  if (status === "Ditolak" || status === "declined") displayStatus = "Declined";
   return (
     <div className="flex justify-end pt-4">
-      {status === "approved" && (
+      {displayStatus === "Approved" && (
         <span className="font-medium text-sm text-green-600">Approved</span>
       )}
-      {status === "declined" && (
+      {displayStatus === "Declined" && (
         <span className="font-medium text-sm text-red-600">Declined</span>
       )}
     </div>
@@ -101,21 +104,22 @@ export default function NotificationRequestItem({
       <p className="text-gray-700 font-medium mb-3">Detail Tim</p>
       <div className="space-y-2">
         <InfoRow Icon={User} label="Nama Ketua Tim">
-          {request.ketua.name} ({request.ketua.details})
+          {request.ketua.name} <span className="text-gray-500">({request.ketua.details})</span>
         </InfoRow>
 
         <InfoRow Icon={Users} label="Nama Anggota Tim">
           <ol className="list-decimal list-inside">
             {request.anggota.map((item) => (
               <li key={item.name}>
-                {item.name} ({item.details})
+                {item.name} <span className="text-gray-500">({item.details})</span>
               </li>
             ))}
           </ol>
         </InfoRow>
 
         <InfoRow Icon={User} label="Dosen Pembimbing">
-          {request.dosen.name} ({request.dosen.details})
+          {request.dosen.name || "-"}
+          <span className="text-gray-500"> ({request.dosen.details ? request.dosen.details : "-"})</span>
         </InfoRow>
       </div>
 
@@ -132,15 +136,15 @@ export default function NotificationRequestItem({
 
       <div className="border-t border-gray-100 my-4"></div>
 
-      <p className="text-gray-700 font-medium mb-3">Pengarsipan Tim</p>
+      <p className="text-gray-700 font-medium mb-3">Berkas CV</p>
       <InfoRow Icon={Link} label="Google Drive">
         <a
           href={request.driveLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 underline hover:text-blue-800"
+          className="text-blue-600 hover:text-blue-800 no-underline"
         >
-          {request.driveLink}
+          Lihat Berkas
         </a>
       </InfoRow>
 
@@ -148,8 +152,8 @@ export default function NotificationRequestItem({
       <div className="border-t border-gray-200 mt-5"></div>
       <ActionFooter
         status={request.status}
-        onRequestDecline={() => onDecline(request.id)}
-        onRequestApprove={() => onApprove(request.id)}
+        onRequestDecline={() => onDecline(request.groupId)}
+        onRequestApprove={() => onApprove(request.groupId)}
       />
     </div>
   );

@@ -39,11 +39,23 @@ export default function ProfileModal(props: ProfileModalProps) {
           credentials: "include",
         });
 
+
         if (!res.ok) {
+          if (res.status === 404) {
+            setCapstoneData(null);
+            setError(null);
+            return;
+          }
           throw new Error("Failed to fetch capstone data");
         }
 
         const data = await res.json();
+
+        // Check if data is empty or null
+        if (!data || Object.keys(data).length === 0) {
+          setCapstoneData(null);
+          return;
+        }
         // Only keep the required fields
         const filtered: CapstoneData = {
           tema: data.kategori, // kategori -> tema
@@ -62,6 +74,8 @@ export default function ProfileModal(props: ProfileModalProps) {
         setLoading(false);
       }
     };
+
+    
 
     fetchCapstoneData();
   }, [isOpen]);
@@ -88,7 +102,13 @@ export default function ProfileModal(props: ProfileModalProps) {
 
           {/* Section Title and Loading */}
           <div className="flex items-center justify-between mb-3">
-            <p className="text-base font-semibold text-gray-800">Detail Tim</p>
+            {capstoneData ? (
+              <p className="text-base font-semibold text-gray-800">Detail Tim</p>
+            ) : (
+              <div className="w-full flex justify-center">
+                <span className="text-base text-gray-400 text-center">Tidak ada capstone</span>
+              </div>
+            )}
             {loading && <span className="text-gray-500 text-sm">Loading...</span>}
           </div>
           {error && <p className="text-red-500">Error: {error}</p>}

@@ -4,7 +4,7 @@ import { X, Calendar, FileText, File, Clipboard } from "react-feather";
 export interface NotificationItem {
   date: string;
   judul: string;
-  status: "Approved" | "Declined";
+  status: "Approved" | "Declined" | "Diterima" | "Ditolak";
   driveLink?: string;
 }
 
@@ -85,39 +85,44 @@ export default function NotificationModal({
         {/* Notification List */}
         <div className="space-y-4 max-h-[70vh] overflow-y-auto px-4 sm:px-6 pb-6 pt-0">
 
-          {notifications.map((item, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-xl p-5 bg-white"
-            >
-              <p className="text-gray-700 font-medium mb-4">
-                Request Project Feedback
-              </p>
+          {notifications.map((item, index) => {
+            // Konversi status agar "Diterima" = "Approved", "Ditolak" = "Declined"
+            let displayStatus = item.status;
+            if (item.status === "Diterima") displayStatus = "Approved";
+            if (item.status === "Ditolak") displayStatus = "Declined";
+            return (
+              <div
+                key={index}
+                className="border border-gray-200 rounded-xl p-5 bg-white"
+              >
+                <p className="text-gray-700 font-medium mb-4">
+                  Request Project Feedback
+                </p>
 
-              <div className="space-y-1 text-sm">
-                
-                {/* DATE */}
-                <DetailRow Icon={Calendar} label="Date" value={item.date} />
+                <div className="space-y-1 text-sm">
+                  {/* DATE */}
+                  <DetailRow Icon={Calendar} label="Date" value={item.date} />
 
-                {/* JUDUL */}
-                <DetailRow Icon={FileText} label="Judul" value={item.judul} />
+                  {/* JUDUL */}
+                  <DetailRow Icon={FileText} label="Judul" value={item.judul} />
 
-                {/* STATUS */}
-                <DetailRow Icon={Clipboard} label="Status" value={item.status} />
+                  {/* STATUS */}
+                  <DetailRow Icon={Clipboard} label="Status" value={displayStatus} />
 
-                {/* DRIVE LINK — ONLY IF APPROVED */}
-                {item.status === "Approved" && item.driveLink && (
-                  <DetailRow 
-                    Icon={File} 
-                    label="Dokumen Proposal" 
-                    value={item.driveLink} 
-                    isLink={true} 
-                    linkHref={item.driveLink} 
-                  />
-                )}
+                  {/* DRIVE LINK — ONLY IF APPROVED */}
+                  {displayStatus === "Approved" && item.driveLink && (
+                    <DetailRow 
+                      Icon={File} 
+                      label="Dokumen Proposal" 
+                      value={item.driveLink} 
+                      isLink={true} 
+                      linkHref={item.driveLink} 
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
       </div>

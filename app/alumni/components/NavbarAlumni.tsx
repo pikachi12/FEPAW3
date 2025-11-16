@@ -9,51 +9,6 @@ import AddModal from "./AddModal";
 import AlumniNotificationModal from "./AlumniNotificationModal";
 import type { AlumniRequest } from "../types/types";
 
-// --- DATA DUMMY (Nanti ini didapat dari API) ---
-const dummyRequests: AlumniRequest[] = [
-  {
-    id: "req1",
-    date: "21/03/2025",
-    daysRemaining: 3,
-    teamName: "FO4 2025",
-    ketua: { name: "Raka Aditua", details: "(22/5123/TK/543)" },
-    anggota: [
-      { name: "Tri Nurtanto", details: "(22/5123/TK/543)" },
-      { name: "Dimar Fahlul", details: "(22/5123/TK/543)" },
-      { name: "Intan Mariam", details: "(22/5123/TK/543)" },
-    ],
-    dosen: { name: "Dr. Budi Santoso, S.T., M.Eng.", details: "(Dosen)" },
-    alasan:
-      "Tim kami mengajukan proyek SmartWaste... Kami juga berencana menganalisis fungsionalitas sistem...",
-    driveLink: "google.drive.com/...",
-    status: "pending", // Status Awal
-  },
-  {
-    id: "req2",
-    date: "20/03/2025",
-    daysRemaining: 2,
-    teamName: "Kreatif 2025",
-    ketua: { name: "Sarah Wijaya", details: "(22/5123/TK/543)" },
-    anggota: [{ name: "Budi Doremi", details: "(22/5123/TK/543)" }],
-    dosen: { name: "Dr. Budi Santoso, S.T., M.Eng.", details: "(Dosen)" },
-    alasan: "Proyek kami berfokus pada pengembangan AI untuk edukasi...",
-    driveLink: "google.drive.com/...",
-    status: "approved", // Contoh yang sudah di-approve
-  },
-  {
-    id: "req3",
-    date: "19/03/2025",
-    daysRemaining: 1,
-    teamName: "TechTitans",
-    ketua: { name: "Ahmad Jalal", details: "(22/5123/TK/543)" },
-    anggota: [{ name: "Citra Lestari", details: "(22/5123/TK/543)" }],
-    dosen: { name: "Dr. Budi Santoso, S.T., M.Eng.", details: "(Dosen)" },
-    alasan: "Analisis data besar untuk infrastruktur kota.",
-    driveLink: "google.drive.com/...",
-    status: "declined", // Contoh yang sudah di-decline
-  },
-];
-// --- END DATA DUMMY ---
 
 export default function NavbarMahasiswa() {
   const [open, setOpen] = useState(false);
@@ -61,7 +16,7 @@ export default function NavbarMahasiswa() {
   const [openReport, setOpenReport] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [requests, setRequests] = useState<AlumniRequest[]>(dummyRequests);
+  const [requests, setRequests] = useState<AlumniRequest[]>([]);
 
   // Get user data from localStorage
   const getUserData = () => {
@@ -75,29 +30,47 @@ export default function NavbarMahasiswa() {
   };
 
   // Fungsi ini akan dipanggil oleh tombol "Approved"
-  const handleApproveRequest = (id: string) => {
-    console.log("Approving request:", id);
-    // TODO: Kirim data ke API di sini
-
-    // Update state secara lokal untuk mengubah UI
-    setRequests((currentRequests) =>
-      currentRequests.map((req) =>
-        req.id === id ? { ...req, status: "approved" } : req
-      )
-    );
+  const handleApproveRequest = async (id: string) => {
+    const req = requests.find(r => r.id === id);
+    const groupId = req?.groupId || id;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ groupId, status: "Diterima" }),
+      });
+      // Auto reload data
+      const { default: fetchAlumniInboxRequests } = await import("../utils/fetchAlumniInbox");
+      const updatedRequests = await fetchAlumniInboxRequests();
+      setRequests(updatedRequests);
+    } catch (err) {
+      console.error("Failed to approve request:", err);
+    }
   };
 
   // Fungsi ini akan dipanggil oleh tombol "Declined"
-  const handleDeclineRequest = (id: string) => {
-    console.log("Declining request:", id);
-    // TODO: Kirim data ke API di sini
-
-    // Update state secara lokal untuk mengubah UI
-    setRequests((currentRequests) =>
-      currentRequests.map((req) =>
-        req.id === id ? { ...req, status: "declined" } : req
-      )
-    );
+  const handleDeclineRequest = async (id: string) => {
+    const req = requests.find(r => r.id === id);
+    const groupId = req?.groupId || id;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ groupId, status: "Ditolak" }),
+      });
+      // Auto reload data
+      const { default: fetchAlumniInboxRequests } = await import("../utils/fetchAlumniInbox");
+      const updatedRequests = await fetchAlumniInboxRequests();
+      setRequests(updatedRequests);
+    } catch (err) {
+      console.error("Failed to decline request:", err);
+    }
   };
 
   const handleLogout = async () => {
@@ -197,11 +170,13 @@ export default function NavbarMahasiswa() {
 
               {/* Modal Notifikasi */}
               <AlumniNotificationModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                requests={requests}
-                onApprove={handleApproveRequest}
-                onDecline={handleDeclineRequest}
+                {...({
+                  isOpen: isModalOpen,
+                  onClose: () => setIsModalOpen(false),
+                  requests,
+                  onApprove: handleApproveRequest,
+                  onDecline: handleDeclineRequest,
+                } as unknown as any)}
               />
 
               <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition text-red-600">
