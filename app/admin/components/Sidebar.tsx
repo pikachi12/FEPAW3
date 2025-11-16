@@ -141,8 +141,8 @@ export default function Sidebar() {
           />
           {isCapstoneTeamsOpen && (
             <ul className="mt-1 space-y-1">
-              <SubNavItem href="/dashboard/add-teams" label="Add Team" />
-              <SubNavItem href="/dashboard/all-teams" label="All Teams" />
+              <SubNavItem href="/admin/dashboard/capstone-teams/add-team" label="Add Team" />
+              <SubNavItem href="/admin/dashboard/capstone-teams/all-teams" label="All Teams" />
             </ul>
           )}
 
@@ -157,8 +157,8 @@ export default function Sidebar() {
           />
           {isCapstoneProjectsOpen && (
             <ul className="mt-1 space-y-1">
-              <SubNavItem href="/dashboard/add-project" label="Add Project" />
-              <SubNavItem href="/dashboard/all-project" label="All Projects" />
+              <SubNavItem href="/admin/dashboard/capstone-projects/add-project" label="Add Project" />
+              <SubNavItem href="/admin/dashboard/capstone-projects/all-projects" label="All Projects" />
             </ul>
           )}
 
