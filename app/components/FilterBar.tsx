@@ -1,9 +1,11 @@
 interface FilterBarProps {
+  categories: string[];
   selectedCategory: string;
   setSelectedCategory: (value: string) => void;
 }
 
 export default function FilterBar({
+  categories,
   selectedCategory,
   setSelectedCategory,
 }: FilterBarProps) {
@@ -15,15 +17,19 @@ export default function FilterBar({
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
-          <option>All</option>
-          <option>IoT</option>
-          <option>AI</option>
-          <option>Web</option>
+          <option value="All">All</option>
+          {categories.map((cat, index) => (
+            <option key={index} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
+
         <button className="border rounded-md px-3 py-2 flex items-center gap-1 hover:bg-gray-100">
           Filters ⚙️
         </button>
       </div>
+
       <p className="text-sm text-gray-500">
         Make a request to get matched with past capstone projects relevant to
         your team

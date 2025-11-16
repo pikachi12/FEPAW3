@@ -108,8 +108,7 @@ export default function OTPPage() {
 
       // alert("OTP verified! Your account is now active.");
 
-      // Simpan token
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       // Redirect sesuai role
       const role = data.user.role;

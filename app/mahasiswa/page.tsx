@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavbarMahasiswa from "./components/NavbarMahasiswa";
 import Hero from "../components/Hero";
 import FilterBar from "../components/FilterBar";
@@ -20,55 +20,92 @@ export interface Project {
   supervisors: string[];
   abstract: string;
   keywords: string[];
-  takenBy: string | null;
+  hasil: string[]; // URL gambar hasil (placeholder untuk sekarang)
+  takenBy: {namaTim: string} | null;
 }
 
-// <-- 3. UPDATE DATA DUMMY (agar sesuai interface baru & screenshot)
-const DUMMY_PROJECTS: Project[] = [
-  {
-    id: 1,
-    status: 'Available', // <-- STATE 1: AVAILABLE
-    title: 'SmartWaste: IoT-Based Waste Management System for Urban Areas',
-    description: 'SmartWaste adalah sistem pengelolaan sampah berbasis IoT...',
-    category: 'Pengolahan Sampah',
-    teamMembers: ['Raja Abby P. I. Ksatria (Ketua)', 'Dimas Fadillah', 'Gina Fadillah'],
-    supervisors: ['Dr. Puji Saesari, S.T., M.Eng.'],
-    abstract: 'Permasalahan pengelolaan sampah di kawasan perkotaan masih menjadi isu penting...',
-    keywords: ['IoT', 'Sensor Ultrasonik', 'Coordinat', 'Optimasi Rute'],
-    takenBy: null,
-  },
-  {
-    id: 2,
-    status: 'NotAvailable_Taken', // <-- STATE 2: NOT AVAILABLE (TAKEN)
-    title: 'Project Alpha: Analisis Data Big Query',
-    description: 'Sistem analisis data untuk memproses jutaan request per detik.',
-    category: 'Data Science',
-    teamMembers: ['Tim FGA-202S'],
-    supervisors: ['Dr. Budi Doremi, M.Kom.'],
-    abstract: 'Abstrak untuk Project Alpha...',
-    keywords: ['BigQuery', 'Data Analysis', 'GCP'],
-    takenBy: 'tim [FGA-202S]', // Alasan
-  },
-  {
-    id: 3,
-    status: 'NotAvailable_Limit', // <-- STATE 3: NOT AVAILABLE (LIMIT)
-    title: 'Project Beta: Aplikasi Mobile Kesehatan',
-    description: 'Aplikasi mobile lintas platform untuk monitoring kesehatan pasien.',
-    category: 'Mobile Development',
-    teamMembers: ['(Belum ada tim)'],
-    supervisors: ['Dr. Siti Aminah, M.T.'],
-    abstract: 'Abstrak untuk Project Beta...',
-    keywords: ['Flutter', 'Real-time', 'Kesehatan'],
-    takenBy: null,
-  },
-  // ... tambahkan 9 proyek lainnya dengan status bervariasi
-];
 
 export default function HomeMahasiswaPage() {
+  const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [sortBy, setSortBy] = useState("terbaru");
+
+  const mapProjects = (data: any[]): Project[] => {
+  return data.map((item: any) => ({
+    id: item.id,
+    title: item.judul,
+    description: item.abstrak.slice(0, 120) + "...",
+    category: item.kategori,
+    teamMembers: [
+      `${item.ketua.name} (Ketua)`,
+      ...item.anggota.map((m: any) => m.name)
+    ],
+    supervisors: [item.dosen.name],
+    abstract: item.abstrak,
+    keywords: [],
+    status:
+      item.status === "Tersedia"
+        ? "Available"
+        : item.takenBy
+        ? "NotAvailable_Taken"
+        : "NotAvailable_Limit",
+    hasil: item.hasil || [],
+    takenBy: item.takenBy ? item.takenBy.namaTim : null,
+    }));
+  };
+
+  const fetchProjects = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/capstones`);
+    const data = await res.json();
+    const mapped = mapProjects(data);
+    setProjects(mapped);
+
+    // Ambil kategori unik
+    const uniqueCategories = Array.from(new Set(mapped.map((p) => p.category)));
+    setCategories(uniqueCategories);
+    } catch (err) {
+      console.error("Failed to fetch projects:", err);
+    }
+  };
+
+  const fetchSearchResults = async () => {
+    try {
+      const params = new URLSearchParams();
+
+      if (searchTerm.trim() !== "") params.append("judul", searchTerm);
+      if (selectedCategory !== "All") params.append("kategori", selectedCategory);
+      if (selectedStatus !== "All") params.append("status", selectedStatus);
+      params.append("sortBy", sortBy);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/capstones/search?${params.toString()}`
+      );
+
+      const data = await res.json();
+      setProjects(mapProjects(data));
+    } catch (err) {
+      console.error("Search failed:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+useEffect(() => {
+  const timeout = setTimeout(() => {
+    fetchSearchResults(); // karena search dan filter sama² pakai backend
+  }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm, selectedCategory, selectedStatus, sortBy]);
 
   const handleOpenModal = (project: Project) => {
     setSelectedProject(project);
@@ -80,15 +117,14 @@ export default function HomeMahasiswaPage() {
     setSelectedProject(null);
   };
 
-  const projects = DUMMY_PROJECTS;
-
   return (
     <main className="min-h-screen bg-white">
       <NavbarMahasiswa />
 
-      <Hero />
+      <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       <FilterBar
+        categories={categories}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       />
