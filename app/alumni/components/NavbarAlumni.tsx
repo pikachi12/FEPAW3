@@ -63,6 +63,17 @@ export default function NavbarMahasiswa() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [requests, setRequests] = useState<AlumniRequest[]>(dummyRequests);
 
+  // Get user data from localStorage
+  const getUserData = () => {
+    if (typeof window !== "undefined") {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        return JSON.parse(userStr);
+      }
+    }
+    return null;
+  };
+
   // Fungsi ini akan dipanggil oleh tombol "Approved"
   const handleApproveRequest = (id: string) => {
     console.log("Approving request:", id);
@@ -108,7 +119,6 @@ export default function NavbarMahasiswa() {
 
   return (
     <header className="flex justify-between items-center py-4 px-8 border-b bg-white sticky top-0 z-20">
-      
       {/* Logo */}
       <div className="flex items-center gap-2">
         <div className="font-bold text-lg">CAPCON</div>
@@ -127,17 +137,16 @@ export default function NavbarMahasiswa() {
             <User size={20} className="text-gray-600" />
           </div>
 
-          {/* User info */}
+          {/* User info (dynamic) */}
           <div className="hidden sm:block text-left">
-            <p className="font-semibold text-gray-800">Hanifah Putri Ariani</p>
-            <p className="text-gray-500 text-sm">hanifahputriariani@mail.ugm.ac.id</p>
+            <p className="font-semibold text-gray-800">{getUserData()?.name || "Alumni User"}</p>
+            <p className="text-gray-500 text-sm">{getUserData()?.email || "alumni@mail.com"}</p>
           </div>
         </button>
 
         {/* DROPDOWN */}
         {open && (
           <div className="absolute right-0 mt-3 w-64 bg-white shadow-lg rounded-lg border z-30">
-
             {/* TITLE SECTION */}
             <div className="px-4 py-3 border-b">
               <h2 className="text-sm font-semibold text-gray-800">
@@ -150,7 +159,7 @@ export default function NavbarMahasiswa() {
 
             {/* MENU ITEMS */}
             <div className="py-1">
-               <button onClick={() => setOpenProfile(true)} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition">
+              <button onClick={() => setOpenProfile(true)} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition">
                 <User size={18} className="text-gray-700" />
                 <span className="text-gray-700 text-sm">Profile</span>
               </button>
@@ -180,27 +189,26 @@ export default function NavbarMahasiswa() {
               />
 
               <button 
-              onClick={() => setIsModalOpen(true)} 
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition">
+                onClick={() => setIsModalOpen(true)} 
+                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition">
                 <Bell size={18} className="text-gray-700" />
                 <span className="text-gray-700 text-sm">Notification</span>
               </button>
 
               {/* Modal Notifikasi */}
-                <AlumniNotificationModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    requests={requests}
-                    onApprove={handleApproveRequest}
-                    onDecline={handleDeclineRequest}
-                />
+              <AlumniNotificationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                requests={requests}
+                onApprove={handleApproveRequest}
+                onDecline={handleDeclineRequest}
+              />
 
               <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition text-red-600">
                 <LogOut size={18} />
                 <span className="text-sm">Logout</span>
               </button>
             </div>
-
           </div>
         )}
       </div>
