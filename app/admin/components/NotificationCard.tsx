@@ -20,7 +20,7 @@ function DetailRow({ icon: Icon, label, value }: DetailRowProps) {
 
 export default function NotificationCard() {
   return (
-    <div className="flex h-full flex-col rounded-lg border-2 border-green-500 bg-white p-5 shadow-sm">
+    <div className="flex h-full flex-col rounded-lg bg-white p-5 shadow-sm">
       <h3 className="mb-4 text-sm font-semibold text-gray-700">
         Report Notification
       </h3>

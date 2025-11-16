@@ -2,7 +2,7 @@ import Sidebar from './components/Sidebar';
 import StatCard from './components/StatCard';
 import NotificationCard from './components/NotificationCard';
 import CapstoneTeamsTable from './components/CapstoneTeamsTable'; // (Versi yang sudah di-update dengan ikon)
-// import CapstoneProjectsTable from '@/components/CapstoneProjectsTable'; // (Ini akan jadi komponen tabel kedua)
+import CapstoneProjectsTable from './components/CapstoneProjectTable'; // (Ini akan jadi komponen tabel kedua)
 
 // Ini adalah Server Component secara default.
 // Data bisa di-fetch di sini dan dilewatkan sebagai props.
@@ -131,6 +131,8 @@ export default async function DashboardPage() {
             yang strukturnya SAMA PERSIS dengan CapstoneTeamsTable,
             hanya berbeda di props 'title', 'columns', dan 'data'
           */}
+          <CapstoneProjectsTable/>
+
           {/* <CapstoneProjectsTable data={projectsData} /> */}
           <p className="text-center text-gray-500">
             {/* Placeholder untuk tabel kedua */}
