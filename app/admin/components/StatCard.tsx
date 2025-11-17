@@ -16,7 +16,7 @@ interface StatCardProps {
 
 function StatCard({ title, subtitle, value, timeframe }: StatCardProps) {
   return (
-    <div className="flex flex-col rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="flex flex-col rounded-lg border border-gray-300 bg-white p-5">
       {/* Bagian Judul */}
       <span className="text-sm font-semibold text-gray-700">{title}</span>
       <span className="mb-4 text-xs text-gray-500">{subtitle}</span>

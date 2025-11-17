@@ -118,7 +118,7 @@ export default function DashboardPage() {
           <div className="flex-1 space-y-6">
             {/* Row Atas: Group Status Overview */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-500">Group Status Overview</h2>
+              <h2 className="text-lg font-semibold text-gray-800">Group Status Overview</h2>
               {loading ? (
                 <p className="text-gray-500">Memuat data statistik...</p>
               ) : error ? (
@@ -166,9 +166,6 @@ export default function DashboardPage() {
         <div className="mt-8 space-y-8">
           <CapstoneTeamsTable />
           <CapstoneProjectsTable/>
-          <p className="text-center text-gray-500">
-            (Di sini letak komponen tabel "Capstone Project Overview")
-          </p>
         </div>
       </main>
     </div>
