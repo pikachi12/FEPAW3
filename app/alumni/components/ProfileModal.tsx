@@ -102,27 +102,20 @@ export default function ProfileModal(props: ProfileModalProps) {
 
           {/* Section Title and Loading */}
           <div className="flex items-center justify-between mb-3">
-            {capstoneData ? (
-              <p className="text-base font-semibold text-gray-800">Detail Tim</p>
-            ) : (
-              <div className="w-full flex justify-center">
-                <span className="text-base text-gray-400 text-center">Tidak ada capstone</span>
-              </div>
-            )}
+            <p className="text-base font-semibold text-gray-800">Detail Tim</p>
             {loading && <span className="text-gray-500 text-sm">Loading...</span>}
           </div>
           {error && <p className="text-red-500">Error: {error}</p>}
 
-          {capstoneData && (
+          {(capstoneData || loading) && (
             <div className="space-y-3 text-sm">
-
               {/* Judul */}
               <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
                 <div className="flex items-center gap-2">
                   <Grid size={18} className="text-gray-700" />
                   <span className="sm:w-32 text-gray-500">Judul</span>
                 </div>
-                <span className="text-gray-800">{capstoneData.namaTim || "-"}</span>
+                <span className="text-gray-800">{loading && !capstoneData ? "" : (capstoneData?.namaTim || "")}</span>
               </div>
 
               {/* Kategori */}
@@ -131,7 +124,7 @@ export default function ProfileModal(props: ProfileModalProps) {
                   <Hash size={18} className="text-gray-700" />
                   <span className="sm:w-32 text-gray-500">Kategori</span>
                 </div>
-                <span className="text-gray-800">{capstoneData.tema || "-"}</span>
+                <span className="text-gray-800">{loading && !capstoneData ? "" : (capstoneData?.tema || "")}</span>
               </div>
 
               {/* Tahun */}
@@ -140,7 +133,7 @@ export default function ProfileModal(props: ProfileModalProps) {
                   <Calendar size={18} className="text-gray-700" />
                   <span className="sm:w-32 text-gray-500">Tahun</span>
                 </div>
-                <span className="text-gray-800">{capstoneData.tahun || "-"}</span>
+                <span className="text-gray-800">{loading && !capstoneData ? "" : (capstoneData?.tahun || "")}</span>
               </div>
 
               {/* Nama Ketua */}
@@ -150,8 +143,8 @@ export default function ProfileModal(props: ProfileModalProps) {
                   <span className="sm:w-32 text-gray-500">Nama Ketua</span>
                 </div>
                 <span className="text-gray-800 leading-relaxed">
-                  {(capstoneData.ketua?.name && capstoneData.ketua.name.trim() !== "" ? capstoneData.ketua.name : "-")}
-                  <span className="hidden sm:inline text-gray-500"> ({(capstoneData.ketua?.nim && capstoneData.ketua.nim.trim() !== "" ? capstoneData.ketua.nim : "-")})</span>
+                  {loading && !capstoneData ? "" : (capstoneData?.ketua?.name || "")}
+                  <span className="hidden sm:inline text-gray-500">{loading && !capstoneData ? "" : ` (${capstoneData?.ketua?.nim || ""})`}</span>
                 </span>
               </div>
 
@@ -162,13 +155,11 @@ export default function ProfileModal(props: ProfileModalProps) {
                   <span className="sm:w-32 text-gray-500">Nama Anggota</span>
                 </div>
                 <div className="text-gray-800 leading-relaxed space-y-1">
-                  {capstoneData.anggota && capstoneData.anggota.length > 0 ? (
+                  {loading && !capstoneData ? null : (capstoneData?.anggota && capstoneData.anggota.length > 0 ? (
                       capstoneData.anggota.map((member) => (
                         <p key={member.nim}>{member.name}<span className="hidden sm:inline text-gray-500"> ({member.nim})</span></p>
                     ))
-                  ) : (
-                    <p>-</p>
-                  )}
+                  ) : null)}
                 </div>
               </div>
 
@@ -179,8 +170,8 @@ export default function ProfileModal(props: ProfileModalProps) {
                   <span className="sm:w-32 text-gray-500">Dosen Pembimbing</span>
                 </div>
                 <span className="text-gray-800 leading-relaxed">
-                  {(capstoneData.dosen?.name && capstoneData.dosen.name.trim() !== "" ? capstoneData.dosen.name : "-")}
-                  <span className="hidden sm:inline text-gray-500"> ({(capstoneData.dosen?.nip && capstoneData.dosen.nip.trim() !== "" ? capstoneData.dosen.nip : "-")})</span>
+                  {loading && !capstoneData ? "" : (capstoneData?.dosen?.name || "")}
+                  <span className="hidden sm:inline text-gray-500">{loading && !capstoneData ? "" : ` (${capstoneData?.dosen?.nip || ""})`}</span>
                 </span>
               </div>
 
@@ -191,7 +182,7 @@ export default function ProfileModal(props: ProfileModalProps) {
                   <span className="sm:w-32 text-gray-500">Proposal</span>
                 </div>
                 <span className="text-gray-800">
-                  {capstoneData.proposalUrl ? (
+                  {loading && !capstoneData ? "" : (capstoneData?.proposalUrl ? (
                     <a
                       href={capstoneData.proposalUrl}
                       target="_blank"
@@ -200,9 +191,7 @@ export default function ProfileModal(props: ProfileModalProps) {
                     >
                       Lihat Proposal
                     </a>
-                  ) : (
-                    "-"
-                  )}
+                  ) : "")}
                 </span>
               </div>
             </div>

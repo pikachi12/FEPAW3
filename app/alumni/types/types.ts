@@ -8,7 +8,6 @@ export interface AlumniRequest {
   groupId: string; // ID grup untuk API
   id: string; // ID unik untuk key dan API call
   date: string;
-  daysRemaining: number;
   teamName: string;
   ketua: TeamMember;
   anggota: TeamMember[];
@@ -16,4 +15,5 @@ export interface AlumniRequest {
   alasan: string;
   driveLink: string;
   status: "pending" | "approved" | "declined" | "Diterima" | "Ditolak"; // Status ini PENTING
+  remainingDays: number;
 }
