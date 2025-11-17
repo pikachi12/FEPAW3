@@ -6,7 +6,7 @@ import FilterBar from "./components/FilterBar";
 import ProjectCard from "./components/ProjectCard";
 import Pagination from "./components/Pagination";
 import ProjectModal from "./components/ProjectModal";
-
+import AutoRedirectHome from "./components/AutoRedirectHome";
 
 // <-- 2. UPDATE INTERFACE PROJECT (sesuai kebutuhan modal)
 export interface Project {
@@ -124,6 +124,9 @@ useEffect(() => {
   const paginatedProjects = projects.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
+    <>
+      <AutoRedirectHome />   {/* AUTO REDIRECT IF LOGGED IN */}
+    
     <main className="min-h-screen bg-white">
       <Navbar />
       <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -159,5 +162,6 @@ useEffect(() => {
       )}
 
     </main>
+    </>
   );
 }
