@@ -109,7 +109,7 @@ export default function AllTeamsPage() {
       </div>
 
       <h1 className="text-2xl font-semibold text-gray-900">All Teams</h1>
-      <p className="mb-6 text-sm text-gray-600">Daftar seluruh kelompok capstone</p>
+      <p className="mb-6 text-sm text-gray-600">List of all capstone teams in the system</p>
 
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
         {/* Toolbar */}
