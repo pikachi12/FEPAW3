@@ -61,6 +61,45 @@ export default function NotificationCard() {
 
   const current = reports[activeIdx];
 
+  const handleResolve = async () => {
+  if (!current?.id) {
+    alert("ID tidak ditemukan");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/groups/resolve-issue`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ groupId: current.id }), // 🔥 FIX DISINI
+      }
+    );
+
+    console.log(current.id);
+    const data = await res.json();
+    
+    if (!res.ok) {
+      alert(data.message || "Gagal menyelesaikan laporan");
+      return;
+    }
+
+    const updated = reports.filter((r) => r.id !== current.id);
+    setReports(updated);
+
+    setActiveIdx((prev) =>
+      prev >= updated.length ? updated.length - 1 : prev
+    );
+
+    alert("Issue resolved successfully!");
+  } catch (err) {
+    alert("Terjadi kesalahan saat resolve issue");
+  }
+};
+
+
   return (
     <div className="flex h-full flex-col rounded-lg bg-white p-5 border border-gray-300">
       <h3 className="mb-4 text-sm font-semibold text-gray-700">Report Notification</h3>
@@ -101,7 +140,10 @@ export default function NotificationCard() {
         )}
       </div>
       <div className="mt-auto pt-4 text-right">
-        <button className="rounded-lg bg-orange-600 px-6 py-2 text-sm font-semibold text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+        <button
+          onClick={handleResolve}
+          className="rounded-lg bg-orange-600 px-6 py-2 text-sm font-semibold text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+        >
           Done
         </button>
       </div>
