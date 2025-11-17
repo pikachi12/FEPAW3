@@ -120,66 +120,71 @@ export default function PersonForm({
   };
 
   return (
-    <div className="space-y-6 rounded-xl bg-white p-6 shadow-sm border border-gray-200">
+  <div className="space-y-6">
 
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">
-        {mode === "edit" ? "Edit Person" : "Add New Person"}
-      </h3>
+    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+      {mode === "edit" ? "Edit Person" : "Add New Person"}
+    </h3>
 
-      <div className="space-y-5">
+    <div className="space-y-5">
 
-        <SelectGroup label="Role" id="role" value={role} onChange={setRole}>
-          <option value="" disabled>Select Role</option>
-          <option value="mahasiswa">Mahasiswa</option>
-          <option value="alumni">Alumni</option>
-          <option value="dosen">Dosen</option>
-        </SelectGroup>
-        
-        <InputGroup
-          label="Email"
-          id="email"
-          type="email"
-          placeholder="mail@mail.ugm.ac.id"
-          value={email}
-          onChange={setEmail}
-        />
+      <SelectGroup label="Role" id="role" value={role} onChange={setRole}>
+        <option value="" disabled>Select Role</option>
+        <option value="mahasiswa">Mahasiswa</option>
+        <option value="alumni">Alumni</option>
+        <option value="dosen">Dosen</option>
+      </SelectGroup>
 
-        <InputGroup
-          label="Nama"
-          id="nama"
-          placeholder="Nama Lengkap"
-          value={nama}
-          onChange={setNama}
-        />
+      <InputGroup
+        label="Email"
+        id="email"
+        type="email"
+        placeholder="mail@mail.ugm.ac.id"
+        value={email}
+        onChange={setEmail}
+      />
 
-        <SelectGroup label="Program Studi" id="prodi" value={prodi} onChange={setProdi}>
-          <option value="" disabled>Pilih Prodi</option>
-          <option value="Teknologi Informasi">Teknologi Informasi</option>
-          <option value="Teknik Elektro">Teknik Elektro</option>
-          <option value="Teknik Biomedis">Teknik Biomedis</option>
-        </SelectGroup>
+      <InputGroup
+        label="Nama"
+        id="nama"
+        placeholder="Nama Lengkap"
+        value={nama}
+        onChange={setNama}
+      />
 
-        <InputGroup
-          label="NIM/NIP"
-          id="nim"
-          placeholder="23/518xxx"
-          value={nim}
-          onChange={setNim}
-        />
-      </div>
+      <SelectGroup
+        label="Program Studi"
+        id="prodi"
+        value={prodi}
+        onChange={setProdi}
+      >
+        <option value="" disabled>Pilih Prodi</option>
+        <option value="Teknologi Informasi">Teknologi Informasi</option>
+        <option value="Teknik Elektro">Teknik Elektro</option>
+        <option value="Teknik Biomedis">Teknik Biomedis</option>
+      </SelectGroup>
 
-      <div className="flex justify-end pt-4">
-        <button
-          disabled={loading}
-          onClick={handleSubmit}
-          className="
-            rounded-lg bg-orange-600 px-6 py-2 text-white text-sm font-medium
-            hover:bg-orange-700 transition disabled:opacity-50
-          "
-        >
-          {loading ? "Saving..." : mode === "edit" ? "Save Changes" : "Create Data"}
-        </button>
-      </div>
+      <InputGroup
+        label="NIM/NIP"
+        id="nim"
+        placeholder="23/518xxx"
+        value={nim}
+        onChange={setNim}
+      />
     </div>
-  );
+
+    <div className="flex justify-end pt-4">
+      <button
+        disabled={loading}
+        onClick={handleSubmit}
+        className="
+          rounded-lg bg-orange-600 px-6 py-2 text-white text-sm font-medium
+          hover:bg-orange-700 transition disabled:opacity-50
+        "
+      >
+        {loading ? "Saving..." : mode === "edit" ? "Save Changes" : "Create Data"}
+      </button>
+    </div>
+  </div>
+);
 }
