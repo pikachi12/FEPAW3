@@ -122,7 +122,7 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
               <div className="text-gray-800 leading-relaxed space-y-1">
                 {groupData.anggota && groupData.anggota.length > 0 ? (
                 groupData.anggota.map((member, idx) => (
-                  <p key={idx}>{idx + 1}. {member.name} <span className="text-gray-500">(</span><span className="text-gray-500">{member.nim}</span><span className="text-gray-500">)</span></p>
+                  <p key={idx}>{member.name} <span className="text-gray-500">(</span><span className="text-gray-500">{member.nim}</span><span className="text-gray-500">)</span></p>
                 ))
                 ) : (
                 <p>-</p>
@@ -165,8 +165,8 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 mt-8">
-            <button onClick={onAdd} className="px-4 py-2 text-sm border rounded-md text-gray-700 hover:bg-gray-100">
-              Add Pengalaman Tim
+            <button onClick={onAdd} className="px-4 py-2 text-sm border border-orange-500 text-orange-500 rounded-md hover:bg-orange-50">
+              Add CV
             </button>
 
             <button

@@ -21,38 +21,40 @@
     notifications,
   }: NotificationModalProps) {
     const [notificationsState, setNotifications] = useState<NotificationItem[]>(notifications);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
       const fetchNotifications = async () => {
-      if (!isOpen) return;
-
+        if (!isOpen) return;
+        setLoading(true);
         try {
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/my-requests`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
           });
-        const data = await res.json();
-
-        const mapped: NotificationItem[] = data.requests.map((req: any) => ({
-          date: new Date(req.createdAt).toLocaleDateString("id-ID", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          }),
-          judul: req.capstone.judul,
-          status: req.status, // Menunggu Review, Ditolak, Diterima
-          driveLink: req.status === "Diterima" 
-            ? req.capstone.proposalUrl || null 
-            : undefined
-        }));
-        setNotifications(mapped);
-      } catch (err) {
-        console.error("Failed to fetch notifications:", err);
-      }
-    };
-    fetchNotifications();
-  }, [isOpen]);
+          const data = await res.json();
+          const mapped: NotificationItem[] = data.requests.map((req: any) => ({
+            date: new Date(req.createdAt).toLocaleDateString("id-ID", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            }),
+            judul: req.capstone.judul,
+            status: req.status, // Menunggu Review, Ditolak, Diterima
+            driveLink: req.status === "Diterima" 
+              ? req.capstone.proposalUrl || null 
+              : undefined
+          }));
+          setNotifications(mapped);
+        } catch (err) {
+          console.error("Failed to fetch notifications:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchNotifications();
+    }, [isOpen]);
   
   notifications = notificationsState;
     
@@ -132,40 +134,38 @@
 
           {/* Notification List */}
           <div className="space-y-4 max-h-[70vh] overflow-y-auto px-4 sm:px-6 pb-6 pt-0">
-
-            {notifications.map((item, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-xl p-5 bg-white"
-              >
-                <p className="text-gray-700 font-medium mb-4">
-                  Request Project Feedback
-                </p>
-
-                <div className="space-y-1 text-sm">
-                  
-                  {/* DATE */}
-                  <DetailRow Icon={Calendar} label="Date" value={item.date} />
-
-                  {/* JUDUL */}
-                  <DetailRow Icon={FileText} label="Judul" value={item.judul} />
-
-                  {/* STATUS */}
-                  <DetailRow Icon={Clipboard} label="Status" value={item.status} />
-
-                  {/* DRIVE LINK — ONLY IF APPROVED */}
-                  {item.status === "Diterima" && item.driveLink && (
-                    <DetailRow 
-                      Icon={File} 
-                      label="Dokumen Proposal" 
-                      value={item.driveLink} 
-                      isLink={true} 
-                      linkHref={item.driveLink} 
-                    />
-                  )}
+            {loading ? (
+              <p className="text-gray-500 text-center py-10">Loading...</p>
+            ) : (
+              notifications.map((item, index) => (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-xl p-5 bg-white"
+                >
+                  <p className="text-gray-700 font-medium mb-4">
+                    Request Project Feedback
+                  </p>
+                  <div className="space-y-1 text-sm">
+                    {/* DATE */}
+                    <DetailRow Icon={Calendar} label="Date" value={item.date} />
+                    {/* JUDUL */}
+                    <DetailRow Icon={FileText} label="Judul" value={item.judul} />
+                    {/* STATUS */}
+                    <DetailRow Icon={Clipboard} label="Status" value={item.status} />
+                    {/* DRIVE LINK — ONLY IF APPROVED */}
+                    {item.status === "Diterima" && item.driveLink && (
+                      <DetailRow 
+                        Icon={File} 
+                        label="Dokumen Proposal" 
+                        value={item.driveLink} 
+                        isLink={true} 
+                        linkHref={item.driveLink} 
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
         </div>
