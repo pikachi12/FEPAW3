@@ -12,7 +12,12 @@ export default function FilterBar({
   setSelectedCategory,
 }: FilterBarProps) {
   return (
-    <section className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
+    <section className="max-w-6xl mx-auto px-4 flex flex-col gap-3 mt-8 mb-6">
+      <div className="w-full rounded-lg px-4 py-3 mb-2" style={{ background: '#FFF4EB' }}>
+        <p className="text-sm text-orange-700 font-medium text-center">
+          Make a request to get matched with past capstone projects relevant to your team
+        </p>
+      </div>
       <div className="flex gap-2">
         <select
           className="border rounded-md px-3 py-2"
@@ -31,11 +36,6 @@ export default function FilterBar({
           Filters <Filter size={18} className="text-gray-400" />
         </button>
       </div>
-
-      <p className="text-sm text-gray-500">
-        Make a request to get matched with past capstone projects relevant to
-        your team
-      </p>
     </section>
   );
 }

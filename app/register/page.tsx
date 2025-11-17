@@ -145,10 +145,10 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="text-xs text-center text-gray-500 mt-4">
+          <p className="text-sm text-center text-gray-500 mt-4">
             Already have an account?{" "}
             <Link href="/login" className="text-gray-700 hover:underline">
-              login
+              Login
             </Link>
           </p>
         </div>

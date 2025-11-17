@@ -35,6 +35,8 @@ export default function HomeMahasiswaPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [sortBy, setSortBy] = useState("terbaru");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(12);
 
   const mapProjects = (data: any[]): Project[] => {
   return data.map((item: any) => ({
@@ -117,6 +119,9 @@ useEffect(() => {
     setSelectedProject(null);
   };
 
+  // Pagination logic
+  const paginatedProjects = projects.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
   return (
     <main className="min-h-screen bg-white">
       <NavbarMahasiswa />
@@ -130,17 +135,22 @@ useEffect(() => {
       />
 
       <section className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {projects.map((project) => (
-          // <-- 6. PASS FUNGSI HANDLER KE PROJECT CARD
+        {paginatedProjects.map((project) => (
           <ProjectCard 
             key={project.id} 
             project={project} 
-            onReadMore={handleOpenModal} // <--- INI PENTING
+            onReadMore={handleOpenModal}
           />
         ))}
       </section>
 
-      <Pagination />
+      <Pagination
+        total={projects.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={setPage}
+        onRowsPerPageChange={(rows) => { setRowsPerPage(rows); setPage(1); }}
+      />
 
       {isModalOpen && selectedProject && (
         <ProjectModal 
@@ -148,7 +158,6 @@ useEffect(() => {
           onClose={handleCloseModal} 
         />
       )}
-      
     </main>
   );
 }
