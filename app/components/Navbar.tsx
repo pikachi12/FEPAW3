@@ -46,10 +46,13 @@ export default function Navbar() {
       <div className="space-x-4">
         {!isLoggedIn ? (
           <>
-            <Link href="/register">
-              <button className="border border-orange-500 text-orange-500 px-4 py-2 rounded-md bg-white hover:bg-orange-50 transition">Register</button>
-            </Link>
-
+            {/* Register hanya di desktop */}
+            <span className="hidden sm:inline">
+              <Link href="/register">
+                <button className="border border-orange-500 text-orange-500 px-4 py-2 rounded-md bg-white hover:bg-orange-50 transition">Register</button>
+              </Link>
+            </span>
+            {/* Login selalu tampil */}
             <Link href="/login">
               <button className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition">
                 Login
