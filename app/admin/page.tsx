@@ -27,28 +27,39 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      setLoading(true);
-      setError(null);
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
+
+    // Fetch capstone stats
+    const fetchCapstoneStats = async () => {
       try {
-        // Fetch capstone stats
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/capstones/stats`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
         });
+        if (!isMounted) return;
         if (res.ok) {
           const data = await res.json();
           setStats(data);
         } else {
-          setError('Gagal mengambil data statistik');
+          setError((prev) => (prev ? prev + '\n' : '') + 'Gagal mengambil data statistik capstone');
         }
-        // Fetch group stats
+      } catch (e) {
+        if (isMounted) setError((prev) => (prev ? prev + '\n' : '') + 'Terjadi kesalahan saat fetch capstone');
+      }
+    };
+
+    // Fetch group stats
+    const fetchGroupStats = async () => {
+      try {
         const resGroup = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/stats`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
         });
+        if (!isMounted) return;
         if (resGroup.ok) {
           const dataGroup = await resGroup.json();
           setGroupStatus({
@@ -56,13 +67,18 @@ export default function DashboardPage() {
             approved: dataGroup.requestStatus?.approved ?? 0,
             rejected: dataGroup.requestStatus?.rejected ?? 0,
           });
+        } else {
+          setError((prev) => (prev ? prev + '\n' : '') + 'Gagal mengambil data statistik group');
         }
       } catch (e) {
-        setError('Terjadi kesalahan saat fetch');
+        if (isMounted) setError((prev) => (prev ? prev + '\n' : '') + 'Terjadi kesalahan saat fetch group');
       }
-      setLoading(false);
     };
-    fetchStats();
+
+    Promise.all([fetchCapstoneStats(), fetchGroupStats()]).finally(() => {
+      if (isMounted) setLoading(false);
+    });
+    return () => { isMounted = false; };
   }, []);
 
   // Group Status Overview
