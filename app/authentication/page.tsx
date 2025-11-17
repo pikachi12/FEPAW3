@@ -5,8 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function OTPPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const emailFromQuery = searchParams.get("email"); 
 
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [email, setEmail] = useState("");
