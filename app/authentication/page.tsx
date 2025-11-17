@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from 'next/image';
 import { ArrowRight, Shield } from 'react-feather';
