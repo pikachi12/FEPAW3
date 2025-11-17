@@ -37,6 +37,7 @@ export default function HomeMahasiswaPage() {
   const [sortBy, setSortBy] = useState("terbaru");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(12);
+  const [order, setOrder] = useState("desc"); // default terbaru
 
   const mapProjects = (data: any[]): Project[] => {
   return data.map((item: any) => ({
@@ -85,6 +86,7 @@ export default function HomeMahasiswaPage() {
       if (selectedCategory !== "All") params.append("kategori", selectedCategory);
       if (selectedStatus !== "All") params.append("status", selectedStatus);
       params.append("sortBy", sortBy);
+      params.append("order", order);
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/capstones/search?${params.toString()}`
@@ -107,7 +109,7 @@ useEffect(() => {
   }, 100);
 
     return () => clearTimeout(timeout);
-  }, [searchTerm, selectedCategory, selectedStatus, sortBy]);
+  }, [searchTerm, selectedCategory, selectedStatus, sortBy, order]);
 
   const handleOpenModal = (project: Project) => {
     setSelectedProject(project);
@@ -132,6 +134,15 @@ useEffect(() => {
         categories={categories}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
+
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+
+        order={order}
+        setOrder={setOrder}
+
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
       />
 
       <section className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
