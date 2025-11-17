@@ -78,9 +78,9 @@
       }
 
       return (
-        <div className="flex justify-between items-start py-1">
+        <div className="flex flex-col sm:flex-row justify-between items-start py-1 gap-1 sm:gap-0">
           {/* Left side: Icon and Label (Date, Judul, Status, Dokumen Proposal) */}
-          <div className="flex gap-2 items-start w-1/3">
+          <div className="flex gap-2 items-start sm:w-1/3">
             <Icon size={18} className="text-gray-500 mt-[2px]" />
             <p className="text-gray-500">{label}</p>
           </div>
@@ -97,7 +97,16 @@
                 Lihat proposal
               </a>
             ) : (
-              <p className={valueClasses + " break-words"}>{value}</p>
+              <p className={valueClasses + " break-words"}>{label === "Judul" ? value.split(/\s*\(([^)]*)\)/)[0] : value}
+                {label === "Judul" && (
+                  <span className="hidden sm:inline text-gray-500 ml-2">
+                    {(() => {
+                      const match = value.match(/\(([^)]*)\)/);
+                      return match ? `(${match[1]})` : "";
+                    })()}
+                  </span>
+                )}
+              </p>
             )}
           </div>
         </div>

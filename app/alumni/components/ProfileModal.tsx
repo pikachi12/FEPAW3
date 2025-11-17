@@ -117,43 +117,54 @@ export default function ProfileModal(props: ProfileModalProps) {
             <div className="space-y-3 text-sm">
 
               {/* Judul */}
-              <div className="flex gap-3">
-                <Grid size={18} className="text-gray-700" />
-                <span className="w-32 text-gray-500">Judul</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Grid size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Judul</span>
+                </div>
                 <span className="text-gray-800">{capstoneData.namaTim || "-"}</span>
               </div>
 
               {/* Kategori */}
-              <div className="flex gap-3">
-                <Hash size={18} className="text-gray-700" />
-                <span className="w-32 text-gray-500">Kategori</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Hash size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Kategori</span>
+                </div>
                 <span className="text-gray-800">{capstoneData.tema || "-"}</span>
               </div>
 
               {/* Tahun */}
-              <div className="flex gap-3">
-                <Calendar size={18} className="text-gray-700" />
-                <span className="w-32 text-gray-500">Tahun</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Calendar size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Tahun</span>
+                </div>
                 <span className="text-gray-800">{capstoneData.tahun || "-"}</span>
               </div>
 
               {/* Nama Ketua */}
-              <div className="flex gap-3 items-start">
-                <User size={18} className="text-gray-700" />
-                <span className="w-32 text-gray-500">Nama Ketua</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <User size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Nama Ketua</span>
+                </div>
                 <span className="text-gray-800 leading-relaxed">
-                  {(capstoneData.ketua?.name && capstoneData.ketua.name.trim() !== "" ? capstoneData.ketua.name : "-")} <span className="text-gray-500">({(capstoneData.ketua?.nim && capstoneData.ketua.nim.trim() !== "" ? capstoneData.ketua.nim : "-")})</span>
+                  {(capstoneData.ketua?.name && capstoneData.ketua.name.trim() !== "" ? capstoneData.ketua.name : "-")}
+                  <span className="hidden sm:inline text-gray-500"> ({(capstoneData.ketua?.nim && capstoneData.ketua.nim.trim() !== "" ? capstoneData.ketua.nim : "-")})</span>
                 </span>
               </div>
 
               {/* Nama Anggota */}
-              <div className="flex gap-3 items-start">
-                <Users size={18} className="text-gray-700" />
-                <span className="w-32 text-gray-500">Nama Anggota</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <Users size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Nama Anggota</span>
+                </div>
                 <div className="text-gray-800 leading-relaxed space-y-1">
                   {capstoneData.anggota && capstoneData.anggota.length > 0 ? (
-                    capstoneData.anggota.map((member, idx) => (
-                      <p key={idx}>{idx + 1}. {member.name} <span className="text-gray-500">({member.nim})</span></p>
+                      capstoneData.anggota.map((member) => (
+                        <p key={member.nim}>{member.name}<span className="hidden sm:inline text-gray-500"> ({member.nim})</span></p>
                     ))
                   ) : (
                     <p>-</p>
@@ -162,18 +173,23 @@ export default function ProfileModal(props: ProfileModalProps) {
               </div>
 
               {/* Dosen Pembimbing */}
-              <div className="flex gap-3 items-start">
-                <User size={18} className="text-gray-700" />
-                <span className="w-32 text-gray-500">Dosen Pembimbing</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <User size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Dosen Pembimbing</span>
+                </div>
                 <span className="text-gray-800 leading-relaxed">
-                  {(capstoneData.dosen?.name && capstoneData.dosen.name.trim() !== "" ? capstoneData.dosen.name : "-")} <span className="text-gray-500">({(capstoneData.dosen?.nip && capstoneData.dosen.nip.trim() !== "" ? capstoneData.dosen.nip : "-")})</span>
+                  {(capstoneData.dosen?.name && capstoneData.dosen.name.trim() !== "" ? capstoneData.dosen.name : "-")}
+                  <span className="hidden sm:inline text-gray-500"> ({(capstoneData.dosen?.nip && capstoneData.dosen.nip.trim() !== "" ? capstoneData.dosen.nip : "-")})</span>
                 </span>
               </div>
 
               {/* Proposal Link */}
-              <div className="flex gap-3 items-start">
-                <Link size={18} className="text-gray-700" />
-                <span className="w-32 text-gray-500">Proposal</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <Link size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Proposal</span>
+                </div>
                 <span className="text-gray-800">
                   {capstoneData.proposalUrl ? (
                     <a

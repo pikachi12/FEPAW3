@@ -84,29 +84,35 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
           {groupData && (
             <div className="space-y-3 text-sm">
               {/* ITEM */}
-              <div className="flex gap-3">
-              <Hash size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Tema</span>
-              <span className="text-gray-800">{groupData.tema || "-"}</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Hash size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Tema</span>
+                </div>
+                <span className="text-gray-800">{groupData.tema || "-"}</span>
               </div>
 
-              <div className="flex gap-3">
-              <Grid size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Nama Tim</span>
-              <span className="text-gray-800">{groupData.namaTim || "-"}</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Grid size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Nama Tim</span>
+                </div>
+                <span className="text-gray-800">{groupData.namaTim || "-"}</span>
               </div>
 
-              <div className="flex gap-3">
-              <Calendar size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Tahun</span>
-              <span className="text-gray-800">{groupData.tahun || "-"}</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Calendar size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Tahun</span>
+                </div>
+                <span className="text-gray-800">{groupData.tahun || "-"}</span>
               </div>
 
               <div className="flex gap-3 items-start">
               <User size={18} className="text-gray-700" />
               <span className="w-32 text-gray-500">Nama Ketua</span>
               <span className="text-gray-800 leading-relaxed">
-                {(groupData.ketua?.name && groupData.ketua.name.trim() !== "" ? groupData.ketua.name : "-")} ({(groupData.ketua?.nim && groupData.ketua.nim.trim() !== "" ? groupData.ketua.nim : "-")})
+                {(groupData.ketua?.name && groupData.ketua.name.trim() !== "" ? groupData.ketua.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(groupData.ketua?.nim && groupData.ketua.nim.trim() !== "" ? groupData.ketua.nim : "-")}</span><span className="text-gray-500">)</span>
               </span>
               </div>
 
@@ -116,7 +122,7 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
               <div className="text-gray-800 leading-relaxed space-y-1">
                 {groupData.anggota && groupData.anggota.length > 0 ? (
                 groupData.anggota.map((member, idx) => (
-                  <p key={idx}>{idx + 1}. {member.name} ({member.nim})</p>
+                  <p key={idx}>{idx + 1}. {member.name} <span className="text-gray-500">(</span><span className="text-gray-500">{member.nim}</span><span className="text-gray-500">)</span></p>
                 ))
                 ) : (
                 <p>-</p>
@@ -128,7 +134,7 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
               <User size={18} className="text-gray-700" />
               <span className="w-32 text-gray-500">Dosen Pembimbing</span>
               <span className="text-gray-800 leading-relaxed">
-                {(groupData.dosen?.name && groupData.dosen.name.trim() !== "" ? groupData.dosen.name : "-")} ({(groupData.dosen?.nip && groupData.dosen.nip.trim() !== "" ? groupData.dosen.nip : "-")})
+                {(groupData.dosen?.name && groupData.dosen.name.trim() !== "" ? groupData.dosen.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(groupData.dosen?.nip && groupData.dosen.nip.trim() !== "" ? groupData.dosen.nip : "-")}</span><span className="text-gray-500">)</span>
               </span>
               </div>
 
@@ -145,9 +151,9 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline break-words"
+                  className="text-blue-600 hover:text-blue-700 no-underline"
                 >
-                  {groupData.linkCVGabungan}
+                  Lihat berkas
                 </a>
                 ) : (
                 "-"
