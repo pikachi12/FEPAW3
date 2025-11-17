@@ -75,9 +75,10 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
         <div className="rounded-xl p-5">
 
           {/* Section Title */}
-          <p className="text-base font-semibold text-gray-800 mb-3">Detail Tim</p>
-
-          {loading && <p className="text-gray-500">Loading...</p>}
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-base font-semibold text-gray-800">Detail Tim</p>
+            {loading && <span className="text-gray-500 text-sm">Loading...</span>}
+          </div>
           {error && <p className="text-red-500">Error: {error}</p>}
 
           {groupData && (
@@ -105,7 +106,7 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
               <User size={18} className="text-gray-700" />
               <span className="w-32 text-gray-500">Nama Ketua</span>
               <span className="text-gray-800 leading-relaxed">
-                {(groupData.ketua?.name && groupData.ketua.name.trim() !== "" ? groupData.ketua.name : "-")} ({(groupData.ketua?.nim && groupData.ketua.nim.trim() !== "" ? groupData.ketua.nim : "-")})
+                {(groupData.ketua?.name && groupData.ketua.name.trim() !== "" ? groupData.ketua.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(groupData.ketua?.nim && groupData.ketua.nim.trim() !== "" ? groupData.ketua.nim : "-")}</span><span className="text-gray-500">)</span>
               </span>
               </div>
 
@@ -115,7 +116,7 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
               <div className="text-gray-800 leading-relaxed space-y-1">
                 {groupData.anggota && groupData.anggota.length > 0 ? (
                 groupData.anggota.map((member, idx) => (
-                  <p key={idx}>{idx + 1}. {member.name} ({member.nim})</p>
+                  <p key={idx}>{idx + 1}. {member.name} <span className="text-gray-500">(</span><span className="text-gray-500">{member.nim}</span><span className="text-gray-500">)</span></p>
                 ))
                 ) : (
                 <p>-</p>
@@ -127,7 +128,7 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
               <User size={18} className="text-gray-700" />
               <span className="w-32 text-gray-500">Dosen Pembimbing</span>
               <span className="text-gray-800 leading-relaxed">
-                {(groupData.dosen?.name && groupData.dosen.name.trim() !== "" ? groupData.dosen.name : "-")} ({(groupData.dosen?.nip && groupData.dosen.nip.trim() !== "" ? groupData.dosen.nip : "-")})
+                {(groupData.dosen?.name && groupData.dosen.name.trim() !== "" ? groupData.dosen.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(groupData.dosen?.nip && groupData.dosen.nip.trim() !== "" ? groupData.dosen.nip : "-")}</span><span className="text-gray-500">)</span>
               </span>
               </div>
 
@@ -144,9 +145,9 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline break-words"
+                  className="text-blue-600 hover:text-blue-700 no-underline"
                 >
-                  {groupData.linkCVGabungan}
+                  Lihat berkas
                 </a>
                 ) : (
                 "-"
@@ -158,7 +159,7 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 mt-8">
-            <button onClick={onAdd} className="px-4 py-2 text-sm border rounded-md text-gray-700 hover:bg-gray-100">
+            <button onClick={onAdd} className="px-4 py-2 text-sm border border-orange-600 rounded-md text-orange-600 hover:bg-orange-50">
               Add Pengalaman Tim
             </button>
 

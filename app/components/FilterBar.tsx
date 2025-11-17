@@ -1,3 +1,5 @@
+import { Filter } from "react-feather";
+
 interface FilterBarProps {
   categories: string[];
   selectedCategory: string;
@@ -26,7 +28,7 @@ export default function FilterBar({
         </select>
 
         <button className="border rounded-md px-3 py-2 flex items-center gap-1 hover:bg-gray-100">
-          Filters ⚙️
+          Filters <Filter size={18} className="text-gray-400" />
         </button>
       </div>
 

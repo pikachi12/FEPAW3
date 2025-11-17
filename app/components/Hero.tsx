@@ -1,3 +1,5 @@
+import { Search } from "react-feather";
+
 interface HeroProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
@@ -22,7 +24,9 @@ export default function Hero({ searchTerm, setSearchTerm }: HeroProps) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <span className="absolute right-3 top-3 text-gray-400">🔍</span>
+              <span className="absolute right-3 top-3 text-gray-400">
+                <Search size={20} className="text-gray-400" />
+              </span>
         </div>
       </div>
       <div className="flex-1">

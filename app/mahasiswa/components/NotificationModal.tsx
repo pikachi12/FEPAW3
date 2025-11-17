@@ -79,11 +79,10 @@
 
       return (
         <div className="flex justify-between items-start py-1">
-          
           {/* Left side: Icon and Label (Date, Judul, Status, Dokumen Proposal) */}
           <div className="flex gap-2 items-start w-1/3">
             <Icon size={18} className="text-gray-500 mt-[2px]" />
-            <p className="text-gray-700">{label}</p>
+            <p className="text-gray-500">{label}</p>
           </div>
 
           {/* Right side: Value */}
@@ -93,9 +92,9 @@
                 href={linkHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-800 hover:text-black underline break-words"
+                className="text-blue-600 hover:text-blue-700 no-underline break-words"
               >
-                {value}
+                Lihat proposal
               </a>
             ) : (
               <p className={valueClasses + " break-words"}>{value}</p>
