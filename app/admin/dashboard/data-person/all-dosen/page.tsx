@@ -100,7 +100,7 @@ export default function AllDosenPage() {
 
       {/* Title */}
       <h1 className="text-2xl font-semibold text-gray-900">All Dosen</h1>
-      <p className="mb-6 text-sm text-gray-600">List seluruh dosen di sistem</p>
+      <p className="mb-6 text-sm text-gray-600">List of all lecturers in the system</p>
 
       {/* Table Container */}
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm">

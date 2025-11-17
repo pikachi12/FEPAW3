@@ -66,7 +66,7 @@ export default function AllProjectsPage() {
       </div>
 
       <h1 className="text-2xl font-semibold text-gray-900">All Projects</h1>
-      <p className="mb-6 text-sm text-gray-600">Daftar semua capstone project</p>
+      <p className="mb-6 text-sm text-gray-600">List of all capstone projects in the system</p>
 
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
         {/* Toolbar */}
