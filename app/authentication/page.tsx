@@ -1,7 +1,5 @@
 "use client";
 
-import Image from 'next/image';
-import { ArrowRight, Shield } from 'react-feather';
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
