@@ -84,75 +84,91 @@ export default function ProfileModal({ isOpen, onClose, onReport, onAdd }: Profi
           {groupData && (
             <div className="space-y-3 text-sm">
               {/* ITEM */}
-              <div className="flex gap-3">
-              <Hash size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Tema</span>
-              <span className="text-gray-800">{groupData.tema || "-"}</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Hash size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Tema</span>
+                </div>
+                <span className="text-gray-800">{groupData.tema || "-"}</span>
               </div>
 
-              <div className="flex gap-3">
-              <Grid size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Nama Tim</span>
-              <span className="text-gray-800">{groupData.namaTim || "-"}</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Grid size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Nama Tim</span>
+                </div>
+                <span className="text-gray-800">{groupData.namaTim || "-"}</span>
               </div>
 
-              <div className="flex gap-3">
-              <Calendar size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Tahun</span>
-              <span className="text-gray-800">{groupData.tahun || "-"}</span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Calendar size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Tahun</span>
+                </div>
+                <span className="text-gray-800">{groupData.tahun || "-"}</span>
               </div>
 
-              <div className="flex gap-3 items-start">
-              <User size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Nama Ketua</span>
-              <span className="text-gray-800 leading-relaxed">
-                {(groupData.ketua?.name && groupData.ketua.name.trim() !== "" ? groupData.ketua.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(groupData.ketua?.nim && groupData.ketua.nim.trim() !== "" ? groupData.ketua.nim : "-")}</span><span className="text-gray-500">)</span>
-              </span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <User size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Nama Ketua</span>
+                </div>
+                <span className="text-gray-800 leading-relaxed">
+                  {(groupData.ketua?.name && groupData.ketua.name.trim() !== "" ? groupData.ketua.name : "-")}
+                  <span className="hidden sm:inline text-gray-500"> ({(groupData.ketua?.nim && groupData.ketua.nim.trim() !== "" ? groupData.ketua.nim : "-")})</span>
+                </span>
               </div>
 
-              <div className="flex gap-3 items-start">
-              <Users size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Nama Anggota</span>
-              <div className="text-gray-800 leading-relaxed space-y-1">
-                {groupData.anggota && groupData.anggota.length > 0 ? (
-                groupData.anggota.map((member, idx) => (
-                  <p key={idx}>{idx + 1}. {member.name} <span className="text-gray-500">(</span><span className="text-gray-500">{member.nim}</span><span className="text-gray-500">)</span></p>
-                ))
-                ) : (
-                <p>-</p>
-                )}
-              </div>
-              </div>
-
-              <div className="flex gap-3 items-start">
-              <User size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Dosen Pembimbing</span>
-              <span className="text-gray-800 leading-relaxed">
-                {(groupData.dosen?.name && groupData.dosen.name.trim() !== "" ? groupData.dosen.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(groupData.dosen?.nip && groupData.dosen.nip.trim() !== "" ? groupData.dosen.nip : "-")}</span><span className="text-gray-500">)</span>
-              </span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <Users size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Nama Anggota</span>
+                </div>
+                <div className="text-gray-800 leading-relaxed space-y-1">
+                  {groupData.anggota && groupData.anggota.length > 0 ? (
+                    groupData.anggota.map((member, idx) => (
+                      <p key={idx}>{member.name}<span className="hidden sm:inline text-gray-500"> ({member.nim})</span></p>
+                    ))
+                  ) : (
+                    <p>-</p>
+                  )}
+                </div>
               </div>
 
-              <div className="flex gap-3 items-start">
-              <Link size={18} className="text-gray-700" />
-              <span className="w-32 text-gray-500">Pengalaman Tim</span>
-              <span className="text-gray-800">
-                {groupData.linkCVGabungan ? (
-                <a
-                  href={
-                  groupData.linkCVGabungan.startsWith("http")
-                    ? groupData.linkCVGabungan
-                    : `https://${groupData.linkCVGabungan}`
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-700 no-underline"
-                >
-                  Lihat berkas
-                </a>
-                ) : (
-                "-"
-                )}
-              </span>
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <User size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Dosen Pembimbing</span>
+                </div>
+                <span className="text-gray-800 leading-relaxed">
+                  {(groupData.dosen?.name && groupData.dosen.name.trim() !== "" ? groupData.dosen.name : "-")}
+                  <span className="hidden sm:inline text-gray-500"> ({(groupData.dosen?.nip && groupData.dosen.nip.trim() !== "" ? groupData.dosen.nip : "-")})</span>
+                </span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 items-start">
+                <div className="flex items-center gap-2">
+                  <Link size={18} className="text-gray-700" />
+                  <span className="sm:w-32 text-gray-500">Pengalaman Tim</span>
+                </div>
+                <span className="text-gray-800">
+                  {groupData.linkCVGabungan ? (
+                    <a
+                      href={
+                        groupData.linkCVGabungan.startsWith("http")
+                          ? groupData.linkCVGabungan
+                          : `https://${groupData.linkCVGabungan}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 no-underline"
+                    >
+                      Lihat berkas
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </span>
               </div>
             </div>
           )}

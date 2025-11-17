@@ -47,7 +47,7 @@ export default function Navbar() {
         {!isLoggedIn ? (
           <>
             <Link href="/register">
-              <button className="text-gray-700 hover:text-black">Register</button>
+              <button className="border border-orange-500 text-orange-500 px-4 py-2 rounded-md bg-white hover:bg-orange-50 transition">Register</button>
             </Link>
 
             <Link href="/login">
