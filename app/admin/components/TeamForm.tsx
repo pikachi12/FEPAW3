@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 interface UserOption {
   id: string;
   name: string;
+  nama?: string;
   email: string;
   role: string;
 }
@@ -24,8 +25,8 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
   const [tema, setTema] = useState("");
   const [tahun, setTahun] = useState("");
   const [namaTim, setNamaTim] = useState("");
-  const [selectedKetua, setSelectedKetua] = useState("");
-  const [selectedDosen, setSelectedDosen] = useState("");
+  const [selectedKetua, setSelectedKetua] = useState<string | null>(null);
+  const [selectedDosen, setSelectedDosen] = useState<string | null>(null);
   const [selectedAnggota, setSelectedAnggota] = useState<UserOption[]>([]);
   const [searchAnggota, setSearchAnggota] = useState("");
   const [searchDosen, setSearchDosen] = useState("");
@@ -70,8 +71,8 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
     setTahun(initialData.tahun?.toString() || "");
     setNamaTim(initialData.namaTim || "");
 
-    setSelectedKetua(initialData.ketua?.id || "");
-    setSelectedDosen(initialData.dosen?.id || "");
+    setSelectedKetua(initialData.ketua?.id ?? null);
+    setSelectedDosen(initialData.dosen?.id ?? null);
 
     setSelectedAnggota(
       initialData.anggota?.map((a: any) => ({
@@ -180,7 +181,7 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
           <div className="relative mt-1">
             <Combobox.Input
               className="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-gray-400 focus:ring-gray-200"
-              displayValue={(id: string) => {
+              displayValue={(id: string | null) => {
                 const ketuaObj = anggotaList.find((a) => a.id === id);
                 return ketuaObj ? (ketuaObj.name || ketuaObj.nama || ketuaObj.email) : "";
               }}
@@ -286,7 +287,7 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
           <div className="relative mt-1">
             <Combobox.Input
               className="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-gray-400 focus:ring-gray-200"
-              displayValue={(id: string) => {
+              displayValue={(id: string | null) => {
                 const dosenObj = dosenList.find((l) => l.id === id);
                 return dosenObj ? (dosenObj.name || dosenObj.nama || dosenObj.email) : "";
               }}
