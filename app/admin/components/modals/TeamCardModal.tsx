@@ -1,39 +1,72 @@
-"use client"; // Diperlukan untuk state, effect, dan portal
+"use client";
 
-import { X } from 'react-feather';
-import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-// Import tipe data TeamData
-import { type TeamData } from '@/lib/dummy-data'; 
-import Link from 'next/link';
+import { X } from "react-feather";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import Link from "next/link";
+import { type GroupData } from "@/app/admin/dashboard/capstone-teams/all-teams/page";
 
-// Tipe untuk Props
 interface TeamCardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  team: TeamData; // Data tim yang akan ditampilkan
+  team: GroupData;
 }
 
 export default function TeamCardModal({ isOpen, onClose, team }: TeamCardModalProps) {
   const [isClient, setIsClient] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   if (!isOpen || !isClient) return null;
 
+  // 🔥 HANDLE DELETE TEAM
+  const handleDelete = async () => {
+    if (!confirm("Yakin ingin menghapus tim ini?")) return;
+
+    setDeleting(true);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${team.id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Gagal menghapus tim");
+        setDeleting(false);
+        return;
+      }
+
+      alert("Team berhasil dihapus!");
+      setDeleting(false);
+      onClose(); // Tutup modal
+      window.location.reload(); // Refresh data
+
+    } catch (err) {
+      console.error("Delete Team Error:", err);
+      alert("Terjadi kesalahan");
+      setDeleting(false);
+    }
+  };
+
   return createPortal(
-    // Overlay
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={onClose}
     >
-      {/* Konten Modal */}
       <div
         className="relative flex h-full max-h-[90vh] w-full max-w-xl flex-col rounded-lg bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Modal */}
+        {/* Header */}
         <div className="flex-shrink-0 border-b p-6">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">Team Card</h3>
@@ -46,78 +79,63 @@ export default function TeamCardModal({ isOpen, onClose, team }: TeamCardModalPr
           </div>
         </div>
 
-        {/* Body Modal (Bisa di-scroll) */}
+        {/* Body */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="space-y-5">
-            
-            {/* Detail Tim */}
             <div>
               <h4 className="mb-2 text-base font-semibold text-gray-800">Detail Tim</h4>
               <div className="grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-3 text-sm">
-                <span className="font-medium text-gray-700">Tema</span>
-                <span className="text-gray-900">{team.tema}</span>
-
-                <span className="font-medium text-gray-700">Role</span>
-                <span className="text-gray-900">{team.roleKetua}</span>
-                
-                <span className="font-medium text-gray-700">Judul Project</span>
-                <span className="text-gray-900">{team.judulProject || '-'}</span> {/* Bisa kosong */}
-
-                <span className="font-medium text-gray-700">Nama Tim</span>
-                <span className="text-gray-900">{team.namaTim}</span>
-                
-                <span className="font-medium text-gray-700">Tahun</span>
-                <span className="text-gray-900">{team.tahun}</span>
+                <span className="font-medium">Tema</span>
+                <span>{team.tema}</span>
+                <span className="font-medium">Nama Tim</span>
+                <span>{team.namaTim}</span>
+                <span className="font-medium">Tahun</span>
+                <span>{team.tahun}</span>
               </div>
             </div>
 
-            {/* Nama Ketua Tim */}
+            {/* Ketua */}
             <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-800">Nama Ketua Tim</h4>
-              <p className="text-sm text-gray-900">{team.namaKetua} ({team.nimNipKetua})</p>
-              <p className="text-sm text-gray-600">{team.emailKetua}</p>
+              <h4 className="mb-2 text-base font-semibold text-gray-800">Ketua Tim</h4>
+              <p className="text-sm">{team.ketua.name} ({team.ketua.nim})</p>
+              <p className="text-sm text-gray-600">{team.ketua.email}</p>
             </div>
 
-            {/* Nama Anggota Tim */}
+            {/* Anggota */}
             <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-800">Nama Anggota Tim</h4>
-              <ul className="list-decimal space-y-1 pl-5 text-sm text-gray-900">
-                {team.anggota.map((anggota, index) => (
-                  <li key={index}>{anggota.nama} ({anggota.nimNip}), {anggota.programStudi}</li>
+              <h4 className="mb-2 text-base font-semibold text-gray-800">Anggota Tim</h4>
+              <ul className="list-disc pl-5 text-sm">
+                {team.anggota.map((m, i) => (
+                  <li key={i}>{m.name} ({m.nim})</li>
                 ))}
               </ul>
             </div>
 
-            {/* Dosen Pembimbing */}
+            {/* Dosen */}
             <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-800">Dosen Pembimbing</h4>
-              <p className="text-sm text-gray-900">{team.dosenPembimbing.nama}, {team.dosenPembimbing.gelar}</p>
-              <p className="text-sm text-gray-600">{team.dosenPembimbing.email}</p>
+              <h4 className="mb-2 text-base font-semibold">Dosen Pembimbing</h4>
+              <p className="text-sm">{team.dosen.name}</p>
+              <p className="text-sm text-gray-600">{team.dosen.email}</p>
             </div>
-
-            {/* Pengalaman Tim */}
-            <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-800">Pengalaman Tim</h4>
-              <p className="text-sm text-gray-900">{team.pengalamanTim || '-'}</p>
-            </div>
-
           </div>
         </div>
 
-        {/* Footer Modal (Tombol Aksi) */}
-        <div className="flex-shrink-0 flex justify-end gap-3 border-t p-6">
+        {/* Footer */}
+        <div className="flex justify-end gap-3 border-t p-6">
           <button
-            className="rounded-lg border border-red-600 bg-white px-5 py-2 text-sm font-semibold text-red-600 shadow-sm hover:bg-red-50"
+            onClick={handleDelete}
+            disabled={deleting}
+            className={`rounded-lg border border-red-600 px-5 py-2 text-sm font-semibold text-red-600 shadow-sm 
+              hover:bg-red-50 ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            Delete
+            {deleting ? "Deleting..." : "Delete"}
           </button>
+
           <Link href={`/admin/dashboard/capstone-teams/edit-team/${team.id}`}>
-          <button
-            className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700"
-          >
-            Edit
-          </button></Link>
-          
+            <button className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700">
+              Edit
+            </button>
+          </Link>
         </div>
       </div>
     </div>,

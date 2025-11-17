@@ -221,15 +221,15 @@ export default function AllDosenPage() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => handleRowClick(person)}
                   >
-                    <td className="px-6 py-4 text-sm">{index + 1}</td>
-                    <td className="px-6 py-4 text-sm">{person.nim || "-"}</td>
-                    <td className="px-6 py-4 text-sm font-medium">
+                    <td className="px-6 py-4">{index + 1}</td>
+                    <td className="px-6 py-4">{person.nim || "-"}</td>
+                    <td className="px-6 py-4">
                       {person.name}
                     </td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4">
                       {person.prodi || "-"}
                     </td>
-                    <td className="px-6 py-4 text-sm capitalize">
+                    <td className="px-6 py-4 capitalize">
                       {person.role}
                     </td>
                   </tr>

@@ -75,10 +75,15 @@ export default function AllMahasiswaPage() {
         { credentials: "include" }
       );
       const json = await res.json();
-      const data: PersonData[] = json.data || json;
 
-      setUsers(data);
-      setFiltered(data);
+      // FORCE TO ARRAY SAFELY
+      const raw = json.data ?? json;
+
+      // kalau bukan array → jadikan array kosong
+      const arr: PersonData[] = Array.isArray(raw) ? raw : [];
+
+      setUsers(arr);
+      setFiltered(arr);
     } catch (err) {
       console.error("FetchUsers Error:", err);
     }

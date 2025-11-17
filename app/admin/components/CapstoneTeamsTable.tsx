@@ -80,9 +80,17 @@ function CapstoneTeamsTable() {
               {loading ? (
                 <tr><td colSpan={5} className="px-6 py-4 text-center text-gray-500">Memuat data...</td></tr>
               ) : error ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center text-red-500">{error}</td></tr>
+                <tr key="error">
+                  <td colSpan={5} className="px-6 py-4 text-center text-red-500">
+                    {error}
+                  </td>
+                </tr>
               ) : teams.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center text-gray-500">Tidak ada data tim</td></tr>
+                <tr key="empty">
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                    Tidak ada data tim
+                  </td>
+                </tr>
               ) : (
                 teams.slice(0, 3).map((team, idx) => (
                   <tr key={team._id}>

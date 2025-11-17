@@ -1,87 +1,199 @@
-"use client"; // Ini penting untuk mengelola state modal
+"use client";
 
-import { useState } from 'react';
-import { Search, ChevronDown } from 'react-feather';
-import TeamCardModal from '@/app/admin/components/modals/TeamCardModal'; // Kita akan buat ini
-// 1. IMPORT DATA DAN TIPE DARI FILE BARU
-import { dummyTeamData, type TeamData } from '@/lib/dummy-data';
+import { useEffect, useState } from "react";
+import { Search, ChevronDown } from "react-feather";
+import TeamCardModal from "@/app/admin/components/modals/TeamCardModal";
+
+export interface GroupData {
+  id: string;
+  tema: string;
+  namaTim: string;
+  tahun: number;
+  ketua: {
+    id: string;
+    name: string;
+    email: string;
+    nim: string;
+    role: string;
+  };
+  anggota: any[];
+  dosen: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  linkCVGabungan?: string;
+  reportIssue?: any;
+}
 
 export default function AllTeamsPage() {
-  // 3. State untuk Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState<TeamData | null>(null);
+  const [groups, setGroups] = useState<GroupData[]>([]);
+  const [filtered, setFiltered] = useState<GroupData[]>([]);
+  const [search, setSearch] = useState("");
 
-  // 4. Fungsi untuk membuka modal
-  const handleRowClick = (team: TeamData) => {
+  // --- Filter states ---
+  const [tema, setTema] = useState("All");
+  const [tahun, setTahun] = useState("All");
+  const [dosenId, setDosenId] = useState("All");
+
+  // --- Modal ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<GroupData | null>(null);
+
+  const handleRowClick = (team: GroupData) => {
     setSelectedTeam(team);
     setIsModalOpen(true);
   };
 
-  // 5. Fungsi untuk menutup modal
   const handleCloseModal = () => {
-    setIsModalOpen(false);
     setSelectedTeam(null);
+    setIsModalOpen(false);
   };
+
+  const fetchGroups = async () => {
+    try {
+      const params = new URLSearchParams();
+
+      if (tema !== "All") params.append("tema", tema);
+      if (tahun !== "All") params.append("tahun", tahun);
+      if (dosenId !== "All") params.append("dosen", dosenId);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/groups?${params.toString()}`,
+        { credentials: "include" }
+      );
+
+      const json = await res.json();
+      const data = json.groups || [];
+
+      setGroups(data);
+      setFiltered(data);
+    } catch (err) {
+      console.error("Fetch Groups Error:", err);
+    }
+  };
+
+  // Fetch awal & ketika filter berubah
+  useEffect(() => {
+    fetchGroups();
+  }, [tema, tahun, dosenId]);
+
+  // SEARCH
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const temp = groups.filter((g) =>
+        (g.namaTim + g.tema + g.ketua.name)
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      );
+      setFiltered(temp);
+    }, 300);
+
+    return () => clearTimeout(t);
+  }, [search, groups]);
+
+  // Ambil list dropdown otomatis
+  const temaList = ["All", ...new Set(groups.map((g) => g.tema))];
+  const tahunList = ["All", ...new Set(groups.map((g) => g.tahun.toString()))];
+  const dosenList = [
+    "All",
+    ...new Set(groups.map((g) => g.dosen?.id + "|" + g.dosen?.name)),
+  ];
 
   return (
     <div>
       {/* Breadcrumbs */}
       <div className="mb-4 text-sm text-gray-500">
-        Capstone Teams &gt; <span className="font-medium text-gray-700">All Teams</span>
+        Capstone Teams &gt;{" "}
+        <span className="font-medium text-gray-700">All Teams</span>
       </div>
 
-      {/* Header */}
       <h1 className="text-2xl font-semibold text-gray-900">All Teams</h1>
-      <p className="mb-6 text-sm text-gray-600">XXXXXXX</p>
+      <p className="mb-6 text-sm text-gray-600">Daftar seluruh kelompok capstone</p>
 
-      {/* Toolbar & Tabel */}
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
         {/* Toolbar */}
         <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 p-4">
-          <button className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-            Categorization
-            <ChevronDown className="h-4 w-4" />
-          </button>
-          <button className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-            Filters
-            <ChevronDown className="h-4 w-4" />
-          </button>
+          {/* FILTER TEMA */}
+          <select
+            value={tema}
+            onChange={(e) => setTema(e.target.value)}
+            className="border rounded-md px-3 py-2"
+          >
+            {temaList.map((t, i) => (
+              <option key={i} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+
+          {/* FILTER TAHUN */}
+          <select
+            value={tahun}
+            onChange={(e) => setTahun(e.target.value)}
+            className="border rounded-md px-3 py-2"
+          >
+            {tahunList.map((t, i) => (
+              <option key={i} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+
+          {/* FILTER DOSEN */}
+          <select
+            value={dosenId}
+            onChange={(e) => setDosenId(e.target.value)}
+            className="border rounded-md px-3 py-2"
+          >
+            {dosenList.map((d, i) => {
+              const [id, name] = d.split("|");
+              return (
+                <option key={i} value={id}>
+                  {name || "All Dosen"}
+                </option>
+              );
+            })}
+          </select>
+
+          {/* SEARCH */}
           <div className="relative ml-auto">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
+            <Search className="absolute left-3 top-2 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search..."
-              className="block w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder="Search team..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="block w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm shadow-sm"
             />
           </div>
         </div>
 
-        {/* Tabel */}
+        {/* TABLE */}
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">No</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tema</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama Tim</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email Ketua</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tema</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Tim</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ketua</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dosen</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {dummyTeamData.map((team, index) => (
-                <tr 
-                  key={team.id} 
-                  className="cursor-pointer hover:bg-gray-50"
+
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filtered.map((team, i) => (
+                <tr
+                  key={team.id}
+                  className="hover:bg-gray-50 cursor-pointer"
                   onClick={() => handleRowClick(team)}
                 >
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">{index + 1}</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">{team.tema}</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">{team.namaTim}</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{team.emailKetua}</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{team.roleKetua}</td>
+                  <td className="px-6 py-4">{i + 1}</td>
+                  <td className="px-6 py-4">{team.tema}</td>
+                  <td className="px-6 py-4 font-medium">{team.namaTim}</td>
+                  <td className="px-6 py-4">{team.ketua?.name}</td>
+                  <td className="px-6 py-4">{team.dosen?.name}</td>
                 </tr>
               ))}
             </tbody>
@@ -89,7 +201,7 @@ export default function AllTeamsPage() {
         </div>
       </div>
 
-      {/* Render Modal */}
+      {/* MODAL */}
       {selectedTeam && (
         <TeamCardModal
           isOpen={isModalOpen}
