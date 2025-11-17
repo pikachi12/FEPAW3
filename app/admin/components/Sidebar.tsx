@@ -92,6 +92,14 @@ export default function Sidebar() {
   // Di aplikasi nyata, Anda akan menggunakan `usePathname` untuk menentukan 'isActive'
   const currentPath = '/dashboard'; 
 
+  const getUserData = () => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      return JSON.parse(userStr);
+    }
+    return null;
+  };
+
   const handleLogout = async () => {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
@@ -200,8 +208,8 @@ export default function Sidebar() {
             <UserIcon className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900">Test-user</p>
-            <p className="text-xs text-gray-500">Email@mail.ugm.ac.id</p>
+            <p className="text-sm font-semibold text-gray-900">{getUserData()?.name}</p>
+            <p className="text-xs text-gray-500">{getUserData()?.email}</p>
           </div>
         </div>
       </div>
