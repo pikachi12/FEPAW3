@@ -9,27 +9,30 @@ function CapstoneProjectTable() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
     const fetchProjects = async () => {
-      setLoading(true);
-      setError(null);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/capstones`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
         });
+        if (!isMounted) return;
         if (res.ok) {
           const data = await res.json();
           setProjects(Array.isArray(data) ? data : []);
         } else {
-          setError('Gagal mengambil data project');
+          setError((prev) => (prev ? prev + '\n' : '') + 'Gagal mengambil data project');
         }
       } catch (e) {
-        setError('Terjadi kesalahan saat fetch');
+        if (isMounted) setError((prev) => (prev ? prev + '\n' : '') + 'Terjadi kesalahan saat fetch project');
       }
-      setLoading(false);
+      if (isMounted) setLoading(false);
     };
     fetchProjects();
+    return () => { isMounted = false; };
   }, []);
 
   return (

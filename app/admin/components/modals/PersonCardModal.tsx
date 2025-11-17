@@ -72,7 +72,7 @@ export default function PersonCardModal({ isOpen, onClose, person }: PersonCardM
               <Hash className="h-4 w-4 text-gray-500" />
               <span className="text-sm font-medium">NIM/NIP</span>
             </div>
-            <span className="text-sm text-gray-900">{person.nimNip}</span>
+            <span className="text-sm text-gray-900">{person.nim}</span>
             
             {/* Baris 2: Email */}
             <div className="flex items-center gap-2 text-gray-700">
@@ -86,14 +86,14 @@ export default function PersonCardModal({ isOpen, onClose, person }: PersonCardM
               <User className="h-4 w-4 text-gray-500" />
               <span className="text-sm font-medium">Nama</span>
             </div>
-            <span className="text-sm text-gray-900">{person.nama}</span>
+            <span className="text-sm text-gray-900">{person.name}</span>
 
             {/* Baris 4: Program Studi */}
             <div className="flex items-center gap-2 text-gray-700">
               <List className="h-4 w-4 text-gray-500" />
               <span className="text-sm font-medium">Program Studi</span>
             </div>
-            <span className="text-sm text-gray-900">{person.programStudi}</span>
+            <span className="text-sm text-gray-900">{person.prodi}</span>
 
             {/* Baris 5: Role */}
             <div className="flex items-center gap-2 text-gray-700">
