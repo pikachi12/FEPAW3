@@ -6,7 +6,7 @@ function mapInboxResponseToAlumniRequest(item: any): AlumniRequest {
     groupId: item.groupId,
     id: item.ketua._id || item.ketua.id || item.namaTim,
     date: new Date(item.createdAt).toLocaleDateString(),
-    daysRemaining: 3, // tenggat 3 hari
+    remainingDays: 3, // tenggat 3 hari
     teamName: item.namaTim,
     ketua: {
       name: item.ketua.name,

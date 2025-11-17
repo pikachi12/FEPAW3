@@ -40,9 +40,11 @@ export default function NotificationRequestItem({
         </div>
         <span className="text-gray-800">
           {request.date}{" "}
-          <span className="text-red-500 text-xs">
-            ({request.daysRemaining} days remaining)
-          </span>
+            {displayStatus === "pending" && (
+              <span className="text-red-500 text-xs">
+                ({request.remainingDays} days remaining)
+              </span>
+            )}
         </span>
       </div>
 
