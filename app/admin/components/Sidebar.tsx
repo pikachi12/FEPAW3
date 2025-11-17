@@ -85,7 +85,7 @@ function SubNavItem({ href, label }: SubNavItemProps) {
 }
 
 export default function Sidebar() {
-  const [isDataPersonOpen, setDataPersonOpen] = useState(true); // Default open seperti di gambar
+  const [isDataPersonOpen, setDataPersonOpen] = useState(false); // Default open seperti di gambar
   const [isCapstoneTeamsOpen, setCapstoneTeamsOpen] = useState(false);
   const [isCapstoneProjectsOpen, setCapstoneProjectsOpen] = useState(false);
 
