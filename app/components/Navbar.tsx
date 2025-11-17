@@ -1,9 +1,8 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { isLoggedIn as checkLoggedIn, logout as logoutAuth } from "@/lib/auth";
+import { isLoggedIn as checkLoggedIn } from "@/lib/auth";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,7 +14,7 @@ export default function Navbar() {
     const userStr = localStorage.getItem("user");
     if (userStr) {
       const user = JSON.parse(userStr);
-      setRole(user.role); // pastikan backend kirim role
+      setRole(user.role);
     }
   }, []);
 
@@ -23,16 +22,29 @@ export default function Navbar() {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         credentials: "include",
       });
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch (err) {
+      console.error("Logout error:", err);
     } finally {
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
       window.location.href = "/";
+    }
+  };
+
+  // 🔥 Determine dashboard path
+  const getDashboardRoute = () => {
+    if (!role) return "/";
+
+    switch (role) {
+      case "admin":
+        return "/admin/dashboard";
+      case "student":
+      case "user":
+        return "/profile";
+      default:
+        return "/";
     }
   };
 
@@ -46,13 +58,14 @@ export default function Navbar() {
       <div className="space-x-4">
         {!isLoggedIn ? (
           <>
-            {/* Register hanya di desktop */}
             <span className="hidden sm:inline">
               <Link href="/register">
-                <button className="border border-orange-500 text-orange-500 px-4 py-2 rounded-md bg-white hover:bg-orange-50 transition">Register</button>
+                <button className="border border-orange-500 text-orange-500 px-4 py-2 rounded-md bg-white hover:bg-orange-50 transition">
+                  Register
+                </button>
               </Link>
             </span>
-            {/* Login selalu tampil */}
+
             <Link href="/login">
               <button className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition">
                 Login
@@ -61,12 +74,14 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link href={`/${role ?? ""}`}>
+            {/* 🔥 Dashboard Button */}
+            <Link href={getDashboardRoute()}>
               <button className="text-gray-700 hover:text-black">
                 Dashboard
               </button>
             </Link>
 
+            {/* Logout */}
             <button
               onClick={handleLogout}
               className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"

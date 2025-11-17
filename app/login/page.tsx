@@ -6,7 +6,7 @@ import { Mail, Lock, ArrowRight } from "react-feather";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function loginPage() {
+export default function LoginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -24,10 +24,11 @@ export default function loginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // Penting: untuk menerima cookie dari backend
+        credentials: "include",
       });
 
       const data = await res.json();
+      console.log("LOGIN RESPONSE:", data);
 
       if (!res.ok) {
         setErrorMsg(data.message || "Login gagal");
@@ -35,14 +36,14 @@ export default function loginPage() {
         return;
       }
 
-      // Simpan token di localStorage juga (untuk client-side access)
-      localStorage.setItem("token", data.token);
+      // ⛔ HAPUS setItem token — backend tidak kirim token
+      // localStorage.setItem("token", data.token);
 
+      // ✔ SIMPAN USER
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirect sesuai role
-      const role = data.user.role;
-      router.push(`/${role}`);
+      // ✔ Redirect berdasarkan role
+      router.push(`/${data.user.role}`);
 
     } catch (error) {
       setErrorMsg("Gagal terhubung ke server");
@@ -53,7 +54,6 @@ export default function loginPage() {
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-gray-900">
-      {/* Background Image */}
       <Image
         src="/auth-bg.jpg"
         alt="Background"
@@ -62,20 +62,16 @@ export default function loginPage() {
         priority
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/40" />
 
-      {/* Back link */}
       <div className="absolute top-8 right-10 text-sm text-white hover:underline flex items-center gap-1">
         <Link href="/" className="flex items-center gap-1">
           Back to main page <ArrowRight size={14} />
         </Link>
       </div>
 
-      {/* Content */}
       <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6">
 
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center gap-2">
             <Image
@@ -92,22 +88,17 @@ export default function loginPage() {
           </div>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-xl shadow-lg p-8 w-full">
           <h2 className="text-xl font-semibold text-center text-gray-900">
             Welcome Back!
           </h2>
           <p className="text-sm text-gray-500 text-center mb-6">
-            Complete these form to <span className="font-medium text-gray-700">login</span> your account
+            Complete these form to <span className="font-medium text-gray-700">login</span>
           </p>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
-
-            {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <input
@@ -121,11 +112,8 @@ export default function loginPage() {
               </div>
             </div>
 
-            {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <input
@@ -139,12 +127,8 @@ export default function loginPage() {
               </div>
             </div>
 
-            {/* Error Message */}
-            {errorMsg && (
-              <p className="text-red-500 text-sm text-center">{errorMsg}</p>
-            )}
+            {errorMsg && (<p className="text-red-500 text-sm text-center">{errorMsg}</p>)}
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
