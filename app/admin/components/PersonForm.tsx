@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
+import toast from "react-hot-toast";
 
 interface InputGroupProps {
   label: string;
@@ -102,21 +103,26 @@ export default function PersonForm({
 
     const method = mode === "edit" ? "PATCH" : "POST";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) {
-      alert("Failed");
+      if (!res.ok) {
+        toast.error("Gagal menyimpan data!", { duration: 5000 });
+        return;
+      }
+
+      toast.success(mode === "edit" ? "Data berhasil diupdate!" : "Data berhasil dibuat!", { duration: 5000 });
+    } catch (error) {
+      console.error(error);
+      toast.error("Terjadi kesalahan jaringan.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    alert(mode === "edit" ? "Updated!" : "Created!");
-    setLoading(false);
   };
 
   return (

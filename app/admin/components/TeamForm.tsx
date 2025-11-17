@@ -1,6 +1,8 @@
 "use client";
 
+import { Combobox } from "@headlessui/react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface UserOption {
   id: string;
@@ -26,6 +28,8 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
   const [selectedDosen, setSelectedDosen] = useState("");
   const [selectedAnggota, setSelectedAnggota] = useState<UserOption[]>([]);
   const [searchAnggota, setSearchAnggota] = useState("");
+  const [searchDosen, setSearchDosen] = useState("");
+  const [ketuaQuery, setKetuaQuery] = useState("");
 
   const [ketuaList, setKetuaList] = useState<UserOption[]>([]);
   const [anggotaList, setAnggotaList] = useState<UserOption[]>([]);
@@ -82,7 +86,10 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
   // -------------------- Add/remove anggota --------------------
   const handleAddAnggota = (person: UserOption) => {
     if (selectedAnggota.find((a) => a.id === person.id)) return;
-    if (selectedAnggota.length >= 4) return alert("Maksimal 4 anggota!");
+    if (selectedAnggota.length >= 4) {
+      toast.error("Maksimal 4 anggota!", { duration: 5000 });
+      return;
+    }
 
     setSelectedAnggota([...selectedAnggota, person]);
   };
@@ -119,11 +126,13 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error("Failed");
-
-      alert(isEditMode ? "Team updated!" : "Team created!");
+      if (!res.ok) {
+        toast.error("Gagal menyimpan tim!", { duration: 5000 });
+        return;
+      }
+      toast.success(isEditMode ? "Team berhasil diupdate!" : "Team berhasil dibuat!", { duration: 5000 });
     } catch {
-      alert("Failed to save team");
+      toast.error("Gagal menyimpan tim!", { duration: 5000 });
     }
 
     setLoading(false);
@@ -167,18 +176,43 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
       {/* Ketua */}
       <div>
         <label className="text-sm font-medium">Ketua</label>
-        <select
-          value={selectedKetua}
-          onChange={(e) => setSelectedKetua(e.target.value)}
-          className="w-full border rounded-md px-3 py-2"
-        >
-          <option value="">Select Ketua</option>
-          {ketuaList.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name} ({u.email})
-            </option>
-          ))}
-        </select>
+        <Combobox value={selectedKetua} onChange={setSelectedKetua} name="ketua">
+          <div className="relative mt-1">
+            <Combobox.Input
+              className="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-gray-400 focus:ring-gray-200"
+              displayValue={(id: string) => {
+                const ketuaObj = anggotaList.find((a) => a.id === id);
+                return ketuaObj ? (ketuaObj.name || ketuaObj.nama || ketuaObj.email) : "";
+              }}
+              onChange={e => setKetuaQuery(e.target.value)}
+              placeholder="Cari atau pilih ketua"
+              required
+            />
+            <Combobox.Options className="absolute z-10 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white border border-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {anggotaList.filter((a) =>
+                (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase())
+              ).length === 0 ? (
+                <div className="cursor-default select-none px-4 py-2 text-gray-700">
+                  Tidak ada hasil
+                </div>
+              ) : (
+                anggotaList.filter((a) =>
+                  (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase())
+                ).map((a) => (
+                  <Combobox.Option
+                    key={a.id}
+                    value={a.id}
+                    className={({ active }) =>
+                      `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg-indigo-600 text-white' : 'text-gray-900'}`
+                    }
+                  >
+                    {(a.name || a.nama) + (a.email ? ` (${a.email})` : "")}
+                  </Combobox.Option>
+                ))
+              )}
+            </Combobox.Options>
+          </div>
+        </Combobox>
       </div>
 
       {/* Nama Tim */}
@@ -203,25 +237,27 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
           placeholder="Search anggota..."
         />
 
-        <div className="border rounded-md max-h-40 overflow-y-auto">
-          {anggotaList
-            .filter(
-              (p) =>
-                p.name.toLowerCase().includes(searchAnggota.toLowerCase()) &&
-                p.id !== selectedKetua &&
-                !selectedAnggota.some((a) => a.id === p.id)
-            )
-            .slice(0, 10)
-            .map((p) => (
-              <div
-                key={p.id}
-                onClick={() => handleAddAnggota(p)}
-                className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              >
-                {p.name} ({p.email})
-              </div>
-            ))}
-        </div>
+        {searchAnggota && (
+          <div className="border rounded-md max-h-40 overflow-y-auto">
+            {anggotaList
+              .filter(
+                (p) =>
+                  p.name.toLowerCase().includes(searchAnggota.toLowerCase()) &&
+                  p.id !== selectedKetua &&
+                  !selectedAnggota.some((a) => a.id === p.id)
+              )
+              .slice(0, 10)
+              .map((p) => (
+                <div
+                  key={p.id}
+                  onClick={() => handleAddAnggota(p)}
+                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  {p.name} ({p.email})
+                </div>
+              ))}
+          </div>
+        )}
 
         {/* Selected anggota */}
         <div className="mt-3 space-y-1">
@@ -246,22 +282,47 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
       {/* Dosen */}
       <div>
         <label className="text-sm font-medium">Dosen Pembimbing</label>
-        <select
-          value={selectedDosen}
-          onChange={(e) => setSelectedDosen(e.target.value)}
-          className="w-full border rounded-md px-3 py-2"
-        >
-          <option value="">Select Dosen</option>
-          {dosenList.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
+        <Combobox value={selectedDosen} onChange={setSelectedDosen} name="dosen">
+          <div className="relative mt-1">
+            <Combobox.Input
+              className="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-gray-400 focus:ring-gray-200"
+              displayValue={(id: string) => {
+                const dosenObj = dosenList.find((l) => l.id === id);
+                return dosenObj ? (dosenObj.name || dosenObj.nama || dosenObj.email) : "";
+              }}
+              onChange={e => setSearchDosen(e.target.value)}
+              placeholder="Cari atau pilih dosen"
+              required
+            />
+            <Combobox.Options className="absolute z-10 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white border border-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {dosenList.filter((l) =>
+                (l.name || l.nama || l.email)?.toLowerCase().includes(searchDosen.toLowerCase())
+              ).length === 0 ? (
+                <div className="cursor-default select-none px-4 py-2 text-gray-700">
+                  Tidak ada hasil
+                </div>
+              ) : (
+                dosenList.filter((l) =>
+                  (l.name || l.nama || l.email)?.toLowerCase().includes(searchDosen.toLowerCase())
+                ).map((l) => (
+                  <Combobox.Option
+                    key={l.id}
+                    value={l.id}
+                    className={({ active }) =>
+                      `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg-indigo-600 text-white' : 'text-gray-900'}`
+                    }
+                  >
+                    {(l.name || l.nama) + (l.email ? ` (${l.email})` : "")}
+                  </Combobox.Option>
+                ))
+              )}
+            </Combobox.Options>
+          </div>
+        </Combobox>
       </div>
 
-      {/* Submit */}
-      <div className="flex justify-end">
+      {/* Submit & Cancel */}
+      <div className="flex justify-end gap-3 pt-4">
         <button
           type="submit"
           disabled={loading}
@@ -276,6 +337,13 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
             : isEditMode
             ? "Save Changes"
             : "Create Team"}
+        </button>
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="rounded-lg border border-orange-600 bg-white px-6 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50"
+        >
+          Cancel
         </button>
       </div>
     </form>

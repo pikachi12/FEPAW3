@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { Combobox } from "@headlessui/react";
 import { ChevronDown, X } from "react-feather";
 
 // --- Sub-komponen ---
@@ -27,7 +29,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
       <select
         id={id}
         name={id}
-        className="block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 pr-8 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+        className="block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 pr-8 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
         value={value}
         onChange={onChange}
       >
@@ -66,7 +68,7 @@ const TextAreaGroup: React.FC<TextAreaGroupProps> = ({
         id={id}
         name={id}
         rows={rows}
-        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+        className="block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -147,13 +149,13 @@ const FileUploadGroup: React.FC<FileUploadGroupProps> = ({
         <div className="flex">
           <input
             type="text"
-            className="flex-1 rounded-l-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-700 shadow-sm"
+            className="flex-1 rounded-l-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-700"
             placeholder={fileName || currentFile || "No file chosen"}
             disabled
           />
           <label
             htmlFor={`file-${id}`}
-            className="cursor-pointer rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100"
+            className="cursor-pointer rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
           >
             Pilih File
           </label>
@@ -189,9 +191,10 @@ export default function ProjectForm({
   // Form states
   const [judul, setJudul] = useState("");
   const [kategori, setKategori] = useState("");
-  const [ketua, setKetua] = useState("");
-  const [dosen, setDosen] = useState("");
+  const [ketua, setKetua] = useState<string | null>("");
+  const [dosen, setDosen] = useState<string | null>("");
   const [abstrak, setAbstrak] = useState("");
+  const [ketuaQuery, setKetuaQuery] = useState("");
   const [proposalFile, setProposalFile] = useState<File | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
@@ -202,14 +205,15 @@ export default function ProjectForm({
   // Anggota search & selected
   const [searchAnggota, setSearchAnggota] = useState("");
   const [selectedAnggota, setSelectedAnggota] = useState<any[]>([]);
+  const [searchDosen, setSearchDosen] = useState("");
 
   const handleAddAnggota = (user: any) => {
     if (selectedAnggota.length >= 4) {
-      alert("Maksimal 4 anggota");
+      toast.error("Maksimal 4 anggota", { duration: 5000 });
       return;
     }
     if (user.id === ketua) {
-      alert("Ketua tidak boleh menjadi anggota");
+      toast.error("Ketua tidak boleh menjadi anggota", { duration: 5000 });
       return;
     }
     setSelectedAnggota((prev) => [...prev, user]);
@@ -238,7 +242,7 @@ export default function ProjectForm({
         const lecturersData = await lecturersRes.json();
         console.log(lecturersData);
 
-        setAlumni(alumniData|| []);
+        setAlumni(alumniData || []);
         setLecturers(lecturersData || []);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -249,18 +253,37 @@ export default function ProjectForm({
   }, []);
 
   useEffect(() => {
-    if (!initialData) return;
-
+    if (!initialData) {
+      setKetua("");
+      setDosen("");
+      return;
+    }
     setJudul(initialData.judul || "");
     setKategori(initialData.kategori || "");
-    setKetua(initialData.ketua?._id || initialData.ketua || "");
-    setDosen(initialData.dosen?._id || initialData.dosen || "");
+    // Cari id ketua dari alumni jika initialData.ketua berupa objek atau string nama/email
+    let ketuaId = "";
+    if (initialData.ketua) {
+      if (typeof initialData.ketua === "object" && initialData.ketua.id) {
+        ketuaId = initialData.ketua.id;
+      } else if (typeof initialData.ketua === "string") {
+        const found = alumni.find((a) =>
+          a.id === initialData.ketua ||
+          a.name === initialData.ketua ||
+          a.nama === initialData.ketua ||
+          a.email === initialData.ketua
+        );
+        ketuaId = found ? found.id : "";
+      }
+    }
+    setKetua(ketuaId);
+    // Dosen tetap
+    setDosen(initialData.dosen?.id || initialData.dosen?._id || initialData.dosen || "");
     setAbstrak(initialData.abstrak || "");
 
     if (initialData.anggota) {
       setSelectedAnggota(initialData.anggota);
     }
-  }, [initialData]);
+  }, [initialData, alumni]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -270,8 +293,8 @@ export default function ProjectForm({
       const formData = new FormData();
       formData.append("judul", judul);
       formData.append("kategori", kategori);
-      formData.append("ketua", ketua);
-      formData.append("dosen", dosen);
+      formData.append("ketua", ketua ?? "");
+      formData.append("dosen", dosen ?? "");
       formData.append("abstrak", abstrak);
 
       formData.append(
@@ -302,17 +325,30 @@ export default function ProjectForm({
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message || "Failed to save project");
+        toast.error(error.message || "Gagal menyimpan project", {
+          duration: 5000,
+        });
+        return;
       }
 
-      alert(mode === "edit" ? "Project updated!" : "Project created!");
+      toast.success(
+        mode === "edit"
+          ? "Project berhasil diupdate!"
+          : "Project berhasil dibuat!",
+        { duration: 5000 }
+      );
 
       if (mode === "add") {
-        window.location.href = "/admin/dashboard/capstone-projects/add-project";
+        setTimeout(() => {
+          window.location.href = "/admin/dashboard/capstone-projects/add-project";
+        }, 1000);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(error instanceof Error ? error.message : "Failed to save project");
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menyimpan project",
+        { duration: 5000 }
+      );
     } finally {
       setLoading(false);
     }
@@ -321,7 +357,7 @@ export default function ProjectForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-4xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+      className="max-w-4xl rounded-lg border border-gray-200 bg-white p-6"
     >
       <div className="space-y-6">
         {/* JUDUL */}
@@ -335,7 +371,7 @@ export default function ProjectForm({
           <input
             id="judul"
             type="text"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="w-full border rounded-md px-3 py-2 mb-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             placeholder="e.g., Sistem Transportasi Cerdas"
             value={judul}
             onChange={(e) => setJudul(e.target.value)}
@@ -362,21 +398,49 @@ export default function ProjectForm({
             </option>
           </SelectGroup>
 
-          <SelectGroup
-            label="Ketua Tim"
-            id="ketua"
-            value={ketua}
-            onChange={(e) => setKetua(e.target.value)}
-          >
-            <option value="" disabled>
-              Select
-            </option>
-            {alumni.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.nama || user.name}
-              </option>
-            ))}
-          </SelectGroup>
+          {/* Combobox Headless UI untuk ketua */}
+          <div>
+            <label htmlFor="ketua" className="block text-sm font-medium text-gray-700">
+              Ketua
+            </label>
+            <Combobox value={ketua ?? ""} onChange={setKetua} name="ketua">
+              <div className="relative mt-1">
+                <Combobox.Input
+                  className="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-gray-400 focus:ring-gray-200"
+                  displayValue={(id: string) => {
+                    const ketuaObj = alumni.find((a) => a.id === id);
+                    return ketuaObj ? (ketuaObj.name || ketuaObj.nama || ketuaObj.email) : "";
+                  }}
+                  onChange={e => setKetuaQuery(e.target.value)}
+                  placeholder="Cari atau pilih ketua"
+                  required
+                />
+                <Combobox.Options className="absolute z-10 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white border border-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {alumni.filter((a) =>
+                    (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase())
+                  ).length === 0 ? (
+                    <div className="cursor-default select-none px-4 py-2 text-gray-700">
+                      Tidak ada hasil
+                    </div>
+                  ) : (
+                    alumni.filter((a) =>
+                      (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase())
+                    ).map((a) => (
+                      <Combobox.Option
+                        key={a.id}
+                        value={a.id}
+                        className={({ active }) =>
+                          `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg-gray-200 text-gray-900' : 'text-gray-900'}`
+                        }
+                      >
+                        {(a.name || a.nama) + (a.email ? ` (${a.email})` : "")}
+                      </Combobox.Option>
+                    ))
+                  )}
+                </Combobox.Options>
+              </div>
+            </Combobox>
+          </div>
         </div>
 
         {/* ANGGOTA */}
@@ -392,26 +456,28 @@ export default function ProjectForm({
             placeholder="Search anggota..."
           />
 
-          <div className="border rounded-md max-h-40 overflow-y-auto">
-            {alumni
-              .filter((p) =>
-                (p.name || p.nama)
-                  ?.toLowerCase()
-                  .includes(searchAnggota.toLowerCase())
-              )
-              .filter((p) => p.id !== ketua)
-              .filter((p) => !selectedAnggota.some((s) => s.id === p.id))
-              .slice(0, 10)
-              .map((p) => (
-                <div
-                  key={p.id}
-                  onClick={() => handleAddAnggota(p)}
-                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                >
-                  {p.name || p.nama} ({p.email})
-                </div>
-              ))}
-          </div>
+          {searchAnggota && (
+            <div className="border rounded-md max-h-40 overflow-y-auto">
+              {alumni
+                .filter((p) =>
+                  (p.name || p.nama)
+                    ?.toLowerCase()
+                    .includes(searchAnggota.toLowerCase())
+                )
+                .filter((p) => p.id !== ketua)
+                .filter((p) => !selectedAnggota.some((s) => s.id === p.id))
+                .slice(0, 10)
+                .map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => handleAddAnggota(p)}
+                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {p.name || p.nama} ({p.email})
+                  </div>
+                ))}
+            </div>
+          )}
 
           <div className="mt-3 space-y-1">
             {selectedAnggota.map((a) => (
@@ -433,21 +499,47 @@ export default function ProjectForm({
         </div>
 
         {/* DOSEN */}
-        <SelectGroup
-          label="Dosen Pembimbing"
-          id="dosen"
-          value={dosen}
-          onChange={(e) => setDosen(e.target.value)}
-        >
-          <option value="" disabled>
-            Select
-          </option>
-          {lecturers.map((lecturer) => (
-            <option key={lecturer.id} value={lecturer.id}>
-              {lecturer.nama || lecturer.name}
-            </option>
-          ))}
-        </SelectGroup>
+        <div>
+          {/* Combobox Headless UI untuk dosen */}
+          <label htmlFor="dosen" className="block text-sm font-medium text-gray-700 mb-1">Dosen Pembimbing</label>
+          <Combobox value={dosen} onChange={setDosen} name="dosen">
+            <div className="relative mt-1">
+              <Combobox.Input
+                className="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-gray-400 focus:ring-gray-200"
+                displayValue={(id: string | null) => {
+                  const dosenObj = lecturers.find((l) => l.id === id);
+                  return dosenObj ? (dosenObj.name || dosenObj.nama || dosenObj.email) : "";
+                }}
+                onChange={e => setSearchDosen(e.target.value)}
+                placeholder="Cari atau pilih dosen"
+                required
+              />
+              <Combobox.Options className="absolute z-10 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white border border-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {lecturers.filter((l) =>
+                  (l.name || l.nama || l.email)?.toLowerCase().includes(searchDosen.toLowerCase())
+                ).length === 0 ? (
+                  <div className="cursor-default select-none px-4 py-2 text-gray-700">
+                    Tidak ada hasil
+                  </div>
+                ) : (
+                  lecturers.filter((l) =>
+                    (l.name || l.nama || l.email)?.toLowerCase().includes(searchDosen.toLowerCase())
+                  ).map((l) => (
+                    <Combobox.Option
+                      key={l.id}
+                      value={l.id}
+                      className={({ active }) =>
+                        `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg-indigo-600 text-white' : 'text-gray-900'}`
+                      }
+                    >
+                      {(l.name || l.nama) + (l.email ? ` (${l.email})` : "")}
+                    </Combobox.Option>
+                  ))
+                )}
+              </Combobox.Options>
+            </div>
+          </Combobox>
+        </div>
 
         {/* ABSTRAK */}
         <TextAreaGroup
@@ -479,18 +571,18 @@ export default function ProjectForm({
         {/* ACTION BUTTONS */}
         <div className="flex justify-end gap-3 pt-4">
           <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="rounded-lg border border-gray-300 bg-white px-6 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-orange-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 disabled:opacity-50"
+            className="rounded-lg bg-orange-600 px-6 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50"
           >
             {loading ? "Saving..." : mode === "edit" ? "Save Changes" : "Create Project"}
+          </button>
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="rounded-lg border border-orange-600 bg-white px-6 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50"
+          >
+            Cancel
           </button>
         </div>
       </div>
