@@ -6,6 +6,7 @@ import ProjectCardModal from "@/app/admin/components/modals/ProjectCardModal";
 import Pagination from "@/app/admin/components/AdminPagination";
 
 export interface ProjectData {
+  ketuaId: string;
   id: string;
   judul: string;
   kategori: string;

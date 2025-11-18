@@ -92,6 +92,11 @@ export default function ProjectCardModal({
           <div className="md:col-span-1">
             <h3 className="mb-2 font-semibold text-gray-800">Nama Anggota Tim</h3>
             <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
+              {project.ketua && (
+                <li key={project.ketua._id || project.ketua.id || project.ketua.email}>
+                  {project.ketua.name} (ketua)
+                </li>
+              )}
               {project.anggota?.length > 0 ? project.anggota.map((anggota, index) => (
                 <li key={anggota.id || index}>{anggota.name}</li>
               )) : <li className="text-gray-500">Tidak ada anggota.</li>}
