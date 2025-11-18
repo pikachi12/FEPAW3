@@ -13,18 +13,7 @@ interface ProjectCardModalProps {
   project: ProjectData;
 }
 
-const ModalSection: React.FC<{ title: string; children: React.ReactNode }> = ({
-  title,
-  children,
-}) => (
-  <div>
-    <h4 className="text-base font-semibold text-gray-800">{title}</h4>
-    <div className="mt-2 text-sm text-gray-700">{children}</div>
-  </div>
-);
-
 export default function ProjectCardModal({
-  // Removed duplicate useState declaration
   isOpen,
   onClose,
   project,
@@ -33,31 +22,31 @@ export default function ProjectCardModal({
   const [showFullAbstract, setShowFullAbstract] = useState<boolean>(false);
 
   const handleDelete = async () => {
-  const confirmDelete = confirm("Yakin ingin menghapus capstone ini?");
-  if (!confirmDelete) return;
+    const confirmDelete = confirm("Yakin ingin menghapus capstone ini?");
+    if (!confirmDelete) return;
 
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/capstones/${project.id}`,
-      {
-        method: "DELETE",
-        credentials: "include",
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/capstones/${project.id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.message || "Gagal menghapus capstone.");
+        return;
       }
-    );
 
-    if (!res.ok) {
-      const err = await res.json();
-      toast.error(err.message || "Gagal menghapus capstone.");
-      return;
+      toast.success("Capstone berhasil dihapus");
+      onClose();
+      window.location.reload();
+    } catch (error: any) {
+      toast.error(error.message || "Terjadi kesalahan saat delete.");
+      console.error("Delete error:", error);
     }
-
-    toast.success("Capstone berhasil dihapus");
-    onClose(); // tutup modal
-    window.location.reload(); // reload halaman agar row hilang
-  } catch (error: any) {
-    toast.error(error.message || "Terjadi kesalahan saat delete.");
-    console.error("Delete error:", error);
-  }
   };
 
   useEffect(() => {
@@ -72,11 +61,11 @@ export default function ProjectCardModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg bg-white p-8 shadow-xl"
+        className="relative w-full max-w-4xl max-height-[90vh] overflow-y-auto rounded-lg bg-white p-8 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Tombol Close */}
-        <button 
+        {/* Close Button */}
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
         >
@@ -87,45 +76,61 @@ export default function ProjectCardModal({
         <p className="mb-2 text-sm text-gray-500">{project.kategori}</p>
         <h2 className="mb-4 text-2xl font-bold text-gray-900">{project.judul}</h2>
 
-        {/* Grid Layout */}
+        {/* GRID */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          {/* LEFT COLUMN */}
           <div className="md:col-span-1">
             <h3 className="mb-2 font-semibold text-gray-800">Nama Anggota Tim</h3>
             <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
+
+              {/* 🔥 Ketua dulu */}
               {project.ketua && (
-                <li key={project.ketua._id || project.ketua.id || project.ketua.email}>
-                  {project.ketua.name} (ketua)
+                <li className="font-semibold">
+                  {project.ketua.name} <span className="text-blue-600 text-xs">(Ketua)</span>
                 </li>
               )}
-              {project.anggota?.length > 0 ? project.anggota.map((anggota, index) => (
-                <li key={anggota.id || index}>{anggota.name}</li>
-              )) : <li className="text-gray-500">Tidak ada anggota.</li>}
+
+              {/* Anggota lainnya */}
+              {project.anggota?.length > 0 ? (
+                project.anggota.map((anggota, index) => (
+                  <li key={anggota.id || index}>{anggota.name}</li>
+                ))
+              ) : (
+                <li className="text-gray-500">Tidak ada anggota.</li>
+              )}
             </ul>
 
             <h3 className="mt-6 mb-2 font-semibold text-gray-800">Dosen Pembimbing</h3>
             <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
-              {project.dosen ? <li>{project.dosen.name || project.dosen.nama || project.dosen.email}</li> : <li className="text-gray-500">Tidak ada data dosen.</li>}
+              {project.dosen ? (
+                <li>{project.dosen.name || project.dosen.email}</li>
+              ) : (
+                <li className="text-gray-500">Tidak ada data dosen.</li>
+              )}
             </ul>
           </div>
 
-          {/* Kolom Kanan: Abstrak, Hasil, Proposal, dll. */}
+          {/* RIGHT COLUMN */}
           <div className="md:col-span-2">
+            {/* 🔥 Abstrak dengan whitespace & line-break support */}
             <h3 className="mb-2 font-semibold text-gray-800">Abstrak</h3>
-            <p className="mb-4 text-sm text-gray-600">
+            <p className="mb-4 text-sm text-gray-600 whitespace-pre-line">
               {showFullAbstract || !project.abstrak || project.abstrak.length <= 300
                 ? project.abstrak || "Tidak ada abstrak."
                 : project.abstrak.slice(0, 300) + "..."}
+
               {project.abstrak && project.abstrak.length > 300 && (
                 <button
                   type="button"
                   className="ml-2 text-xs text-blue-600 underline hover:text-blue-800"
-                  onClick={() => setShowFullAbstract((v: boolean) => !v)}
+                  onClick={() => setShowFullAbstract((v) => !v)}
                 >
                   {showFullAbstract ? "Tutup" : "Lihat Selengkapnya"}
                 </button>
               )}
             </p>
 
+            {/* Hasil */}
             <h3 className="mb-2 font-semibold text-gray-800">Hasil</h3>
             {project.hasil && project.hasil.length > 0 ? (
               <div className="mb-4 flex flex-wrap gap-4">
@@ -139,9 +144,12 @@ export default function ProjectCardModal({
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 mb-4">Belum ada hasil yang tersedia.</p>
+              <p className="text-sm text-gray-500 mb-4">
+                Belum ada hasil yang tersedia.
+              </p>
             )}
 
+            {/* Proposal */}
             <h3 className="mb-2 font-semibold text-gray-800">Proposal</h3>
             {project.proposalUrl ? (
               <a
@@ -158,18 +166,18 @@ export default function ProjectCardModal({
           </div>
         </div>
 
-        {/* FOOTER: Edit & Delete Buttons */}
+        {/* FOOTER */}
         <div className="flex justify-end gap-3 pt-8">
           <button
             onClick={handleDelete}
-            className="rounded-lg border border-red-600 bg-white px-5 py-2 text-sm font-semibold text-red-600 shadow-sm hover:bg-red-50"
+            className="rounded-lg border border-red-600 bg-white px-5 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
           >
             Delete
           </button>
 
           <Link
             href={`/admin/dashboard/capstone-projects/edit-project/${project.id}`}
-            className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700"
+            className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-700"
           >
             Edit
           </Link>
