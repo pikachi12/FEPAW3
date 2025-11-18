@@ -11,9 +11,16 @@ interface ProjectModalProps {
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     const [showFullAbstract, setShowFullAbstract] = React.useState(false);
-  const [alasan, setAlasan] = React.useState("");
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [successMessage, setSuccessMessage] = React.useState("");
+    const [alasan, setAlasan] = React.useState("");
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [successMessage, setSuccessMessage] = React.useState("");
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+    React.useEffect(() => {
+      if (typeof window !== "undefined") {
+        setIsLoggedIn(!!localStorage.getItem("user"));
+      }
+    }, []);
 
   if (!project) return null;
 
@@ -83,7 +90,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         </div>
       )}
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
       onClick={onClose}
     >
       {/* Modal Content */}
@@ -142,8 +149,11 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
           {/* Kolom Kanan: Abstrak, Hasil, dll. */}
           <div className="md:col-span-2">
-            <h3 className="mb-2 font-semibold text-gray-800 flex items-center gap-2">
-              Abstrak
+            <h3 className="mb-2 font-semibold text-gray-800">Abstrak</h3>
+            <p className="mb-4 text-sm text-gray-600">
+              {showFullAbstract || !project.abstract || project.abstract.length <= 300
+                ? project.abstract
+                : project.abstract.slice(0, 300) + "..."}
               {project.abstract && project.abstract.length > 300 && (
                 <button
                   type="button"
@@ -153,11 +163,6 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   {showFullAbstract ? "Tutup" : "Lihat Selengkapnya"}
                 </button>
               )}
-            </h3>
-            <p className="mb-4 text-sm text-gray-600">
-              {showFullAbstract || !project.abstract || project.abstract.length <= 300
-                ? project.abstract
-                : project.abstract.slice(0, 300) + "..."}
             </p>
 
             <h3 className="mb-2 font-semibold text-gray-800">Kata Kunci</h3>
@@ -198,15 +203,17 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={handleSubmit}
-                disabled={!isAvailable || isSubmitting}
+                disabled={!isAvailable || isSubmitting || !isLoggedIn}
                 className={`rounded-lg px-6 py-2 text-white font-medium flex items-center gap-2
-                  ${isAvailable 
+                  ${isAvailable && isLoggedIn
                     ? 'bg-orange-600 hover:bg-orange-700' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
               >
                 {isSubmitting ? (
                   <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                ) : !isLoggedIn ? (
+                  "Login untuk Submit"
                 ) : (
                   "Submit Request"
                 )}

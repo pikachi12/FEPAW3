@@ -1,4 +1,4 @@
-import { Filter } from "react-feather";
+import { ChevronDown } from "react-feather";
 import { useState, useRef, useEffect } from "react";
 
 interface FilterBarProps {
@@ -55,18 +55,23 @@ export default function FilterBar({
       <div className="flex items-center gap-3 relative">
 
         {/* CATEGORY DROPDOWN */}
-        <select
-          className="border rounded-md px-3 py-2"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="All">All</option>
-          {categories.map((cat, i) => (
-            <option key={i} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            className="border rounded-md px-3 py-2 pr-8 appearance-none"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="All">All</option>
+            {categories.map((cat, i) => (
+              <option key={i} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
+            <ChevronDown size={18} />
+          </span>
+        </div>
 
         {/* FILTER BUTTON */}
         <div className="relative" ref={ref}>
@@ -74,7 +79,7 @@ export default function FilterBar({
             onClick={() => setOpen((prev) => !prev)}
             className="border rounded-md px-3 py-2 flex items-center gap-1 hover:bg-gray-100"
           >
-            Filters <Filter size={18} className="text-gray-400" />
+            Filters <ChevronDown size={18} className="text-gray-400" />
           </button>
 
           {/* DROPDOWN APPEARS HERE */}

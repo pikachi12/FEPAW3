@@ -16,12 +16,11 @@ interface CapstoneData {
 interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onReport: () => void;
   onAdd: () => void;
 }
 
 export default function ProfileModal(props: ProfileModalProps) {
-  const { isOpen, onClose, onReport, onAdd } = props;
+  const { isOpen, onClose, onAdd } = props;
   const [capstoneData, setCapstoneData] = useState<CapstoneData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -197,15 +196,7 @@ export default function ProfileModal(props: ProfileModalProps) {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 mt-8">
-            <button
-              onClick={onReport}
-              className="px-4 py-2 text-sm bg-orange-600 text-white rounded-md hover:bg-orange-700"
-            >
-              Report Data
-            </button>
-          </div>
+          {/* Action Buttons (Report removed) */}
 
         </div>
       </div>
