@@ -14,6 +14,7 @@ interface ProjectData {
   ketua?: { email: string };
   // anggota is required by the ProjectData type used elsewhere (e.g. all-projects page)
   anggota: { id: string; name: string; email: string }[];
+  pendingGroupsCount: number;
 }
 
 export default function CapstoneProjectTable() {
