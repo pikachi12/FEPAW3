@@ -17,10 +17,10 @@ interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: () => void;
+  onReport: () => void;
 }
 
-export default function ProfileModal(props: ProfileModalProps) {
-  const { isOpen, onClose, onAdd } = props;
+export default function ProfileModal({ isOpen, onClose, onAdd, onReport }: ProfileModalProps) {
   const [capstoneData, setCapstoneData] = useState<CapstoneData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
