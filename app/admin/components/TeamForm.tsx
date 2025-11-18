@@ -129,14 +129,17 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
 
       if (!res.ok) {
         toast.error("Gagal menyimpan tim!", { duration: 5000 });
+        setLoading(false);
         return;
       }
       toast.success(isEditMode ? "Team berhasil diupdate!" : "Team berhasil dibuat!", { duration: 5000 });
+      setTimeout(() => {
+        window.location.href = "/admin/dashboard/capstone-teams/all-teams";
+      }, 800);
     } catch {
       toast.error("Gagal menyimpan tim!", { duration: 5000 });
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   // -------------------- RENDER --------------------

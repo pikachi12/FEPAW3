@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "react-feather";
+import toast from "react-hot-toast";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
@@ -40,102 +41,97 @@ export default function TeamCardModal({ isOpen, onClose, team }: TeamCardModalPr
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Gagal menghapus tim");
+        toast.error(data.message || "Gagal menghapus tim");
         setDeleting(false);
         return;
       }
 
-      alert("Team berhasil dihapus!");
+      toast.success("Team berhasil dihapus!");
       setDeleting(false);
       onClose(); // Tutup modal
       window.location.reload(); // Refresh data
 
     } catch (err) {
       console.error("Delete Team Error:", err);
-      alert("Terjadi kesalahan");
+      toast.error("Terjadi kesalahan");
       setDeleting(false);
     }
   };
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="relative flex h-full max-h-[90vh] w-full max-w-xl flex-col rounded-lg bg-white shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex-shrink-0 border-b p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Team Card</h3>
-            <button
-              onClick={onClose}
-              className="rounded-full p-1 text-gray-500 hover:bg-gray-100"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4" onClick={onClose}>
+      <div className="bg-white rounded-xl w-full max-w-2xl shadow-lg relative p-6" onClick={e => e.stopPropagation()}>
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+        >
+          <X size={20} />
+        </button>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-5">
-            <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-800">Detail Tim</h4>
-              <div className="grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-3 text-sm">
-                <span className="font-medium">Tema</span>
-                <span>{team.tema}</span>
-                <span className="font-medium">Nama Tim</span>
-                <span>{team.namaTim}</span>
-                <span className="font-medium">Tahun</span>
-                <span>{team.tahun}</span>
+        {/* Title */}
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Team Card</h2>
+
+        {/* Content Box */}
+        <div className="rounded-xl p-5">
+          <div className="space-y-3 text-sm">
+            <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+              <span className="font-medium w-32 text-gray-500">Tema</span>
+              <span className="text-gray-800">{team.tema || "-"}</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+              <span className="font-medium w-32 text-gray-500">Nama Tim</span>
+              <span className="text-gray-800">{team.namaTim || "-"}</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+              <span className="font-medium w-32 text-gray-500">Tahun</span>
+              <span className="text-gray-800">{team.tahun || "-"}</span>
+            </div>
+
+            <div className="flex gap-3 items-start">
+              <span className="font-medium w-32 text-gray-500">Nama Ketua</span>
+              <span className="text-gray-800 leading-relaxed">
+                {(team.ketua?.name && team.ketua.name.trim() !== "" ? team.ketua.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(team.ketua?.nim && team.ketua.nim.trim() !== "" ? team.ketua.nim : "-")}</span><span className="text-gray-500">)</span>
+              </span>
+            </div>
+
+            <div className="flex gap-3 items-start">
+              <span className="font-medium w-32 text-gray-500">Nama Anggota</span>
+              <div className="text-gray-800 leading-relaxed space-y-1">
+                {team.anggota && team.anggota.length > 0 ? (
+                  team.anggota.map((member, idx) => (
+                    <p key={idx}>{member.name} <span className="text-gray-500">(</span><span className="text-gray-500">{member.nim}</span><span className="text-gray-500">)</span></p>
+                  ))
+                ) : (
+                  <p>-</p>
+                )}
               </div>
             </div>
 
-            {/* Ketua */}
-            <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-800">Ketua Tim</h4>
-              <p className="text-sm">{team.ketua.name} ({team.ketua.nim})</p>
-              <p className="text-sm text-gray-600">{team.ketua.email}</p>
-            </div>
-
-            {/* Anggota */}
-            <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-800">Anggota Tim</h4>
-              <ul className="list-disc pl-5 text-sm">
-                {team.anggota.map((m, i) => (
-                  <li key={i}>{m.name} ({m.nim})</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Dosen */}
-            <div>
-              <h4 className="mb-2 text-base font-semibold">Dosen Pembimbing</h4>
-              <p className="text-sm">{team.dosen.name}</p>
-              <p className="text-sm text-gray-600">{team.dosen.email}</p>
+            <div className="flex gap-3 items-start">
+              <span className="font-medium w-32 text-gray-500">Dosen Pembimbing</span>
+              <span className="text-gray-800 leading-relaxed">
+                {(team.dosen?.name && team.dosen.name.trim() !== "" ? team.dosen.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{('nip' in team.dosen && typeof team.dosen.nip === 'string' && team.dosen.nip.trim() !== "" ? team.dosen.nip : "-")}</span><span className="text-gray-500">)</span>
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="flex justify-end gap-3 border-t p-6">
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className={`rounded-lg border border-red-600 px-5 py-2 text-sm font-semibold text-red-600 shadow-sm 
-              hover:bg-red-50 ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {deleting ? "Deleting..." : "Delete"}
-          </button>
-
-          <Link href={`/admin/dashboard/capstone-teams/edit-team/${team.id}`}>
-            <button className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700">
-              Edit
+          {/* Footer */}
+          <div className="flex justify-end gap-3 mt-8">
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className={`px-4 py-2 text-sm border border-red-600 text-red-600 rounded-md hover:bg-red-50 ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              {deleting ? "Deleting..." : "Delete"}
             </button>
-          </Link>
+
+            <Link href={`/admin/dashboard/capstone-teams/edit-team/${team.id}`}>
+              <button className="px-4 py-2 text-sm bg-orange-600 text-white rounded-md hover:bg-orange-700">
+                Edit
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>,

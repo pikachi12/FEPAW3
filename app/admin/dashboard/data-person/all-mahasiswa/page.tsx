@@ -106,6 +106,17 @@ export default function AllMahasiswaPage() {
     return () => clearTimeout(t);
   }, [search, users]);
 
+  // Helper untuk label kategori
+  const getCategoryLabel = () => {
+    if (categoryRole === "mahasiswa,alumni") return "Mahasiswa + Alumni";
+    if (categoryRole === "mahasiswa") return "Mahasiswa";
+    if (categoryRole === "alumni") return "Alumni";
+    return "Categorization";
+  };
+
+  // Helper untuk cek filter aktif
+  const isFilterActive = filterProdi !== "All" || filterVerified !== "All" || filterClaimed !== "All";
+
   return (
     <div>
       {/* Breadcrumb */}
@@ -129,7 +140,7 @@ export default function AllMahasiswaPage() {
               onClick={() => setOpenCategory((p) => !p)}
               className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
             >
-              Categorization <ChevronDown className="h-4 w-4" />
+              {getCategoryLabel()} <ChevronDown className="h-4 w-4" />
             </button>
 
             {openCategory && (
@@ -160,9 +171,12 @@ export default function AllMahasiswaPage() {
           <div className="relative" ref={filterRef}>
             <button
               onClick={() => setOpenFilter((p) => !p)}
-              className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              className={`flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 relative`}
             >
               Filters <ChevronDown className="h-4 w-4" />
+              {isFilterActive && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border border-white"></span>
+              )}
             </button>
 
             {openFilter && (
@@ -209,13 +223,15 @@ export default function AllMahasiswaPage() {
 
           {/* SEARCH */}
           <div className="relative ml-auto">
-            <Search className="absolute left-3 top-2 h-5 w-5 text-gray-400" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search name/email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="block w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm shadow-sm"
+              className="w-full h-10 border border-gray-300 rounded-md px-3 pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
             />
           </div>
         </div>
@@ -234,19 +250,27 @@ export default function AllMahasiswaPage() {
             </thead>
 
             <tbody className="bg-white divide-y divide-gray-200">
-              {filtered.map((p, i) => (
-                <tr
-                  key={p.id}
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleRowClick(p)}
-                >
-                  <td className="px-6 py-4">{i + 1}</td>
-                  <td className="px-6 py-4">{p.nim}</td>
-                  <td className="px-6 py-4">{p.name}</td>
-                  <td className="px-6 py-4">{p.prodi}</td>
-                  <td className="px-6 py-4 capitalize">{p.role}</td>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm">
+                    Tidak ada data ditemukan
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((p, i) => (
+                  <tr
+                    key={p.id}
+                    className="hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleRowClick(p)}
+                  >
+                    <td className="px-6 py-4">{i + 1}</td>
+                    <td className="px-6 py-4">{p.nim}</td>
+                    <td className="px-6 py-4">{p.name}</td>
+                    <td className="px-6 py-4">{p.prodi}</td>
+                    <td className="px-6 py-4 capitalize">{p.role}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

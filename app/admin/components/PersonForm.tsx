@@ -39,9 +39,10 @@ interface SelectGroupProps {
   value: string;
   onChange: (value: string) => void;
   children: React.ReactNode;
+  disabled?: boolean;
 }
 
-const SelectGroup = ({ label, id, value, onChange, children }: SelectGroupProps) => (
+const SelectGroup = ({ label, id, value, onChange, children, disabled }: SelectGroupProps) => (
   <div className="space-y-1">
     <label htmlFor={id} className="text-sm font-medium text-gray-700">
       {label}
@@ -51,6 +52,7 @@ const SelectGroup = ({ label, id, value, onChange, children }: SelectGroupProps)
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
         className="
           w-full rounded-lg border border-gray-300 bg-white px-3 py-2 pr-10 text-sm
           appearance-none
@@ -78,7 +80,7 @@ export default function PersonForm({
   const [email, setEmail] = useState("");
   const [nama, setNama] = useState("");
   const [prodi, setProdi] = useState("");
-  const [nim, setNim] = useState("");
+  const [nimOrNip, setNimOrNip] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -88,13 +90,74 @@ export default function PersonForm({
     setEmail(initialData.email || "");
     setNama(initialData.name || "");
     setProdi(initialData.prodi || "");
-    setNim(initialData.nim || "");
+    if (initialData.role === "dosen") {
+      setNimOrNip(initialData.nip || "");
+    } else {
+      setNimOrNip(initialData.nim || "");
+    }
   }, [initialData]);
 
+  useEffect(() => {
+    if (role === "dosen") {
+      setProdi("-");
+    }
+  }, [role]);
+
+  const validateInput = () => {
+    if (!role) {
+      toast.error("Role harus dipilih.");
+      return false;
+    }
+    if (!email) {
+      toast.error("Email harus diisi.");
+      return false;
+    }
+    if (role === "mahasiswa" || role === "alumni") {
+      if (!/^\S+@mail\.ugm\.ac\.id$/.test(email)) {
+        toast.error("Email mahasiswa/alumni harus @mail.ugm.ac.id");
+        return false;
+      }
+    } else if (role === "dosen") {
+      if (!/^\S+@ugm\.ac\.id$/.test(email)) {
+        toast.error("Email dosen harus @ugm.ac.id");
+        return false;
+      }
+    } else {
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        toast.error("Email tidak valid.");
+        return false;
+      }
+    }
+    if (!nama || nama.length < 3) {
+      toast.error("Nama harus diisi minimal 3 karakter.");
+      return false;
+    }
+    if (role !== "dosen" && !prodi) {
+      toast.error("Program Studi harus dipilih.");
+      return false;
+    }
+    if (!nimOrNip || nimOrNip.length < 8) {
+      toast.error(role === "dosen" ? "NIP harus diisi minimal 8 karakter dan format sesuai contoh." : "NIM harus diisi minimal 8 karakter dan format sesuai contoh.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
+          setTimeout(() => {
+            if (role === "dosen") {
+              window.location.href = "/admin/dashboard/data-person/all-dosen";
+            } else {
+              window.location.href = "/admin/dashboard/data-person/all-mahasiswa";
+            }
+          }, 800);
+    if (!validateInput()) return;
     setLoading(true);
 
-    const payload = { role, email, name: nama, prodi, nim };
+    // Jika dosen, prodi tidak dikirim dan gunakan nip
+    const payload = role === "dosen"
+      ? { role, email, name: nama, nip: nimOrNip }
+      : { role, email, name: nama, prodi, nim: nimOrNip };
 
     const url =
       mode === "edit"
@@ -117,6 +180,7 @@ export default function PersonForm({
       }
 
       toast.success(mode === "edit" ? "Data berhasil diupdate!" : "Data berhasil dibuat!", { duration: 5000 });
+      // Tidak perlu redirect otomatis setelah submit
     } catch (error) {
       console.error(error);
       toast.error("Terjadi kesalahan jaringan.");
@@ -163,32 +227,41 @@ export default function PersonForm({
         id="prodi"
         value={prodi}
         onChange={setProdi}
+        disabled={role === "dosen"}
       >
         <option value="" disabled>Pilih Prodi</option>
-        <option value="Teknologi Informasi">Teknologi Informasi</option>
-        <option value="Teknik Elektro">Teknik Elektro</option>
-        <option value="Teknik Biomedis">Teknik Biomedis</option>
+        {role === "dosen" ? <option value="-">-</option> : <>
+          <option value="Teknologi Informasi">Teknologi Informasi</option>
+          <option value="Teknik Elektro">Teknik Elektro</option>
+          <option value="Teknik Biomedis">Teknik Biomedis</option>
+        </>}
       </SelectGroup>
 
       <InputGroup
-        label="NIM/NIP"
-        id="nim"
-        placeholder="23/518xxx"
-        value={nim}
-        onChange={setNim}
+        label={role === "dosen" ? "NIP" : "NIM"}
+        id="nimOrNip"
+        placeholder={role === "dosen" ? "1970xxxx" : "23/518xxx"}
+        value={nimOrNip}
+        onChange={setNimOrNip}
       />
     </div>
 
-    <div className="flex justify-end pt-4">
+    <div className="flex justify-end gap-3 pt-4">
       <button
-        disabled={loading}
+        type="button"
         onClick={handleSubmit}
-        className="
-          rounded-lg bg-orange-600 px-6 py-2 text-white text-sm font-medium
-          hover:bg-orange-700 transition disabled:opacity-50
-        "
+        className={`rounded-lg px-6 py-2 text-sm font-semibold text-white ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"}`}
+        disabled={loading}
       >
-        {loading ? "Saving..." : mode === "edit" ? "Save Changes" : "Create Data"}
+        {loading ? "Loading..." : (mode === "edit" ? "Save Changes" : "Create")}
+      </button>
+      <button
+        type="button"
+        onClick={() => window.history.back()}
+        className="rounded-lg border border-orange-600 bg-white px-6 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50"
+        disabled={loading}
+      >
+        Cancel
       </button>
     </div>
   </div>

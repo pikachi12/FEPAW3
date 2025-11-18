@@ -7,6 +7,7 @@ import PersonCardModal from "@/app/admin/components/modals/PersonCardModal";
 export interface DosenData {
   id: string;
   nim: string;
+  nip?: string;
   name: string;
   prodi: string;
   role: string;
@@ -91,6 +92,9 @@ export default function AllDosenPage() {
     return () => clearTimeout(timeout);
   }, [selectedProdi, selectedVerification, selectedClaim]);
 
+  // Helper untuk cek filter aktif
+  const isFilterActive = selectedVerification !== "All" || selectedClaim !== "All";
+
   return (
     <div>
       {/* Breadcrumbs */}
@@ -108,14 +112,16 @@ export default function AllDosenPage() {
         {/* Toolbar */}
         <div className="flex items-center gap-2 border-b border-gray-200 p-4">
 
-          {/* Categorization → Filter by Prodi */}
+          {/* Filter dropdown tanpa Prodi */}
           <div className="relative">
             <button
               onClick={() => setOpenFilter((o) => !o)}
-              className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              className={`flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 relative`}
             >
-              Filters
-              <ChevronDown className="h-4 w-4" />
+              Filters <ChevronDown className="h-4 w-4" />
+              {isFilterActive && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border border-white"></span>
+              )}
             </button>
 
             {openFilter && (
@@ -123,21 +129,6 @@ export default function AllDosenPage() {
                 ref={ref}
                 className="absolute left-0 mt-2 w-64 bg-white border rounded-lg shadow-lg p-4 z-20"
               >
-                {/* PRODI */}
-                <p className="text-xs font-medium mb-1 text-gray-600">Program Studi</p>
-                <select
-                  value={selectedProdi}
-                  onChange={(e) => setSelectedProdi(e.target.value)}
-                  className="w-full border px-2 py-1 mb-3 rounded-md text-sm"
-                >
-                  <option value="All">All</option>
-                  {categories.map((cat, i) => (
-                    <option key={i} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-
                 {/* VERIFIED */}
                 <p className="text-xs font-medium mb-1 text-gray-600">
                   Verification Status
@@ -179,7 +170,7 @@ export default function AllDosenPage() {
               placeholder="Search name/email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="block w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full h-10 border border-gray-300 rounded-md px-3 pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
             />
           </div>
         </div>
@@ -208,32 +199,45 @@ export default function AllDosenPage() {
             </thead>
 
             <tbody className="divide-y divide-gray-200 bg-white">
-              {data
-                .filter((p) =>
-                  search.trim() === ""
-                    ? true
-                    : p.name.toLowerCase().includes(search.toLowerCase()) ||
-                      p.email.toLowerCase().includes(search.toLowerCase())
-                )
-                .map((person, index) => (
-                  <tr
-                    key={person.id}
-                    className="cursor-pointer hover:bg-gray-50"
-                    onClick={() => handleRowClick(person)}
-                  >
-                    <td className="px-6 py-4">{index + 1}</td>
-                    <td className="px-6 py-4">{person.nim || "-"}</td>
-                    <td className="px-6 py-4">
-                      {person.name}
-                    </td>
-                    <td className="px-6 py-4">
-                      {person.prodi || "-"}
-                    </td>
-                    <td className="px-6 py-4 capitalize">
-                      {person.role}
-                    </td>
-                  </tr>
-                ))}
+              {data.filter((p) =>
+                search.trim() === ""
+                  ? true
+                  : p.name.toLowerCase().includes(search.toLowerCase()) ||
+                    p.email.toLowerCase().includes(search.toLowerCase())
+              ).length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm">
+                    Tidak ada data dosen ditemukan
+                  </td>
+                </tr>
+              ) : (
+                data
+                  .filter((p) =>
+                    search.trim() === ""
+                      ? true
+                      : p.name.toLowerCase().includes(search.toLowerCase()) ||
+                        p.email.toLowerCase().includes(search.toLowerCase())
+                  )
+                  .map((person, index) => (
+                    <tr
+                      key={person.id}
+                      className="cursor-pointer hover:bg-gray-50"
+                      onClick={() => handleRowClick(person)}
+                    >
+                      <td className="px-6 py-4">{index + 1}</td>
+                      <td className="px-6 py-4">{person.nip || "-"}</td>
+                      <td className="px-6 py-4">
+                        {person.name}
+                      </td>
+                      <td className="px-6 py-4">
+                        {person.prodi || "-"}
+                      </td>
+                      <td className="px-6 py-4 capitalize">
+                        {person.role}
+                      </td>
+                    </tr>
+                  ))
+              )}
             </tbody>
           </table>
         </div>

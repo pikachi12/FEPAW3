@@ -10,6 +10,7 @@ interface ProjectModalProps {
 }
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
+    const [showFullAbstract, setShowFullAbstract] = React.useState(false);
   const [alasan, setAlasan] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [successMessage, setSuccessMessage] = React.useState("");
@@ -141,8 +142,23 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
           {/* Kolom Kanan: Abstrak, Hasil, dll. */}
           <div className="md:col-span-2">
-            <h3 className="mb-2 font-semibold text-gray-800">Abstrak</h3>
-            <p className="mb-4 text-sm text-gray-600">{project.abstract}</p>
+            <h3 className="mb-2 font-semibold text-gray-800 flex items-center gap-2">
+              Abstrak
+              {project.abstract && project.abstract.length > 300 && (
+                <button
+                  type="button"
+                  className="ml-2 text-xs text-blue-600 underline hover:text-blue-800"
+                  onClick={() => setShowFullAbstract((v) => !v)}
+                >
+                  {showFullAbstract ? "Tutup" : "Lihat Selengkapnya"}
+                </button>
+              )}
+            </h3>
+            <p className="mb-4 text-sm text-gray-600">
+              {showFullAbstract || !project.abstract || project.abstract.length <= 300
+                ? project.abstract
+                : project.abstract.slice(0, 300) + "..."}
+            </p>
 
             <h3 className="mb-2 font-semibold text-gray-800">Kata Kunci</h3>
             <div className="mb-4 flex flex-wrap gap-2">

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { type PersonData } from "@/app/admin/dashboard/data-person/all-mahasiswa/page";
+import toast from "react-hot-toast";
 
 interface PersonCardModalProps {
   isOpen: boolean;
@@ -44,19 +45,19 @@ export default function PersonCardModal({
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Gagal menghapus user");
+        toast.error(data.message || "Gagal menghapus user");
         setDeleting(false);
         return;
       }
 
-      alert("User berhasil dihapus!");
+      toast.success("Data berhasil dihapus", { duration: 5000 });
       setDeleting(false);
       onClose(); // Tutup modal
       window.location.reload(); // Refresh data
 
     } catch (err) {
+      toast.error("Gagal menghapus data", { duration: 5000 });
       console.error("Delete User Error:", err);
-      alert("Terjadi kesalahan");
       setDeleting(false);
     }
   };
@@ -88,35 +89,35 @@ export default function PersonCardModal({
           </h4>
 
           <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3">
-            <div className="flex items-center gap-2 text-gray-700">
-              <Hash className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">NIM/NIP</span>
+            <div className="flex items-center gap-2 text-gray-500">
+              <Hash size={18}className="h-4 w-4 text-gray-500" />
+              <span className="sm:w-32">NIM/NIP</span>
             </div>
-            <span className="text-sm text-gray-900">{person.nim}</span>
+            <span className="text-sm text-gray-800">{person.nim}</span>
 
-            <div className="flex items-center gap-2 text-gray-700">
-              <Mail className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">Email</span>
+            <div className="flex items-center gap-2 text-gray-500">
+              <Mail size={18} className="h-4 w-4 text-gray-500" />
+              <span className="sm:w-32">Email</span>
             </div>
-            <span className="text-sm text-gray-900">{person.email}</span>
+            <span className="text-sm text-gray-800">{person.email}</span>
 
-            <div className="flex items-center gap-2 text-gray-700">
-              <User className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">Nama</span>
+            <div className="flex items-center gap-2 text-gray-500">
+              <User size={18} className="h-4 w-4 text-gray-500" />
+              <span className="sm:w-32">Nama</span>
             </div>
-            <span className="text-sm text-gray-900">{person.name}</span>
+            <span className="text-sm text-gray-800">{person.name}</span>
 
-            <div className="flex items-center gap-2 text-gray-700">
-              <List className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">Program Studi</span>
+            <div className="flex items-center gap-2 text-gray-500">
+              <List size={18} className="h-4 w-4 text-gray-500" />
+              <span className="sm:w-32">Program Studi</span>
             </div>
-            <span className="text-sm text-gray-900">{person.prodi}</span>
+            <span className="text-sm text-gray-800">{person.prodi}</span>
 
-            <div className="flex items-center gap-2 text-gray-700">
-              <Smile className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">Role</span>
+            <div className="flex items-center gap-2 text-gray-500">
+              <Smile size={18} className="h-4 w-4 text-gray-500" />
+              <span className="sm:w-32">Role</span>
             </div>
-            <span className="text-sm text-gray-900 capitalize">{person.role}</span>
+            <span className="text-sm text-gray-800 capitalize">{person.role}</span>
           </div>
         </div>
 

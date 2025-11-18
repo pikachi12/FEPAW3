@@ -337,12 +337,9 @@ export default function ProjectForm({
           : "Project berhasil dibuat!",
         { duration: 5000 }
       );
-
-      if (mode === "add") {
-        setTimeout(() => {
-          window.location.href = "/admin/dashboard/capstone-projects/add-project";
-        }, 1000);
-      }
+      setTimeout(() => {
+        window.location.href = "/admin/dashboard/capstone-projects/all-projects";
+      }, 800);
     } catch (error) {
       console.error("Error:", error);
       toast.error(
@@ -573,7 +570,7 @@ export default function ProjectForm({
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-orange-600 px-6 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50"
+            className={`rounded-lg px-6 py-2 text-sm font-semibold text-white ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"}`}
           >
             {loading ? "Saving..." : mode === "edit" ? "Save Changes" : "Create Project"}
           </button>

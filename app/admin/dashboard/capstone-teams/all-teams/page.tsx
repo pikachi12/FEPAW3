@@ -40,6 +40,9 @@ export default function AllTeamsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<GroupData | null>(null);
 
+  // Tambahkan state untuk semua data tim
+  const [allGroups, setAllGroups] = useState<GroupData[]>([]);
+
   const handleRowClick = (team: GroupData) => {
     setSelectedTeam(team);
     setIsModalOpen(true);
@@ -73,9 +76,25 @@ export default function AllTeamsPage() {
     }
   };
 
+  // Fetch semua data tim untuk dropdown
+  const fetchAllGroups = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/groups`,
+        { credentials: "include" }
+      );
+      const json = await res.json();
+      const data = json.groups || [];
+      setAllGroups(data);
+    } catch (err) {
+      console.error("Fetch All Groups Error:", err);
+    }
+  };
+
   // Fetch awal & ketika filter berubah
   useEffect(() => {
     fetchGroups();
+    fetchAllGroups();
   }, [tema, tahun, dosenId]);
 
   // SEARCH
@@ -92,12 +111,12 @@ export default function AllTeamsPage() {
     return () => clearTimeout(t);
   }, [search, groups]);
 
-  // Ambil list dropdown otomatis
-  const temaList = ["All", ...new Set(groups.map((g) => g.tema))];
-  const tahunList = ["All", ...new Set(groups.map((g) => g.tahun.toString()))];
+  // Ambil list dropdown dari allGroups, bukan groups
+  const temaList = ["All", ...new Set(allGroups.map((g) => g.tema))];
+  const tahunList = ["All", ...new Set(allGroups.map((g) => g.tahun.toString()))];
   const dosenList = [
     "All",
-    ...new Set(groups.map((g) => g.dosen?.id + "|" + g.dosen?.name)),
+    ...new Set(allGroups.map((g) => g.dosen?.id + "|" + g.dosen?.name)),
   ];
 
   return (
@@ -150,7 +169,7 @@ export default function AllTeamsPage() {
               const [id, name] = d.split("|");
               return (
                 <option key={i} value={id}>
-                  {name || "All Dosen"}
+                  {name || "All"}
                 </option>
               );
             })}
@@ -158,13 +177,15 @@ export default function AllTeamsPage() {
 
           {/* SEARCH */}
           <div className="relative ml-auto">
-            <Search className="absolute left-3 top-2 h-5 w-5 text-gray-400" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
             <input
               type="text"
-              placeholder="Search team..."
+              placeholder="Search name/theme..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="block w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm shadow-sm"
+              className="w-full h-10 border border-gray-300 rounded-md px-3 pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
             />
           </div>
         </div>
@@ -183,19 +204,27 @@ export default function AllTeamsPage() {
             </thead>
 
             <tbody className="bg-white divide-y divide-gray-200">
-              {filtered.map((team, i) => (
-                <tr
-                  key={team.id}
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleRowClick(team)}
-                >
-                  <td className="px-6 py-4">{i + 1}</td>
-                  <td className="px-6 py-4">{team.tema}</td>
-                  <td className="px-6 py-4 font-medium">{team.namaTim}</td>
-                  <td className="px-6 py-4">{team.ketua?.name}</td>
-                  <td className="px-6 py-4">{team.dosen?.name}</td>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm">
+                    Tidak ada data tim ditemukan
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((team, i) => (
+                  <tr
+                    key={team.id}
+                    className="hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleRowClick(team)}
+                  >
+                    <td className="px-6 py-4">{i + 1}</td>
+                    <td className="px-6 py-4">{team.tema}</td>
+                    <td className="px-6 py-4 font-medium">{team.namaTim}</td>
+                    <td className="px-6 py-4">{team.ketua?.name}</td>
+                    <td className="px-6 py-4">{team.dosen?.name}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
