@@ -85,7 +85,6 @@ FEPAW3/
 - **API:** Fetch API untuk komunikasi backend
 - **Utility:** clsx, class-variance-authority, jwt-decode
 - **Build Tools:** PostCSS, Autoprefixer
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Setup
 
