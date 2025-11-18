@@ -117,3 +117,6 @@ FEPAW3/
 ## URL Deploy
 
 [capstone-container.vercel.app](https://capstone-container.vercel.app)
+
+## URL Presentasi
+[Video Presentasi](https://drive.google.com/file/d/1jmTTuXSn76P5DnsQeBD6zPDwrHYTjGjf/view?usp=drivesdk)
