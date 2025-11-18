@@ -1,6 +1,7 @@
 "use client";
 import { X } from "react-feather";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface ReportDataModalProps {
   isOpen: boolean;
@@ -16,13 +17,23 @@ export default function ReportDataModal({ isOpen, onClose }: ReportDataModalProp
   }, [isOpen]);
 
   const submitReason = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/report-issue`, {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/report-issue`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description : reason }),
-        credentials: "include", // Penting: untuk menerima cookie dari backend
+        body: JSON.stringify({ description: reason }),
+        credentials: "include",
       });
-    onClose();
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.message || "Gagal mengirim laporan.");
+      } else {
+        toast.success("Laporan berhasil dikirim!");
+        onClose();
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Terjadi kesalahan saat submit.");
+    }
   };
 
   if (!isOpen) return null;

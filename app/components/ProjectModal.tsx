@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { X } from 'react-feather';
-import { Project } from '@/app/page'; 
+import { Project } from '@/app/page';
+import toast from 'react-hot-toast';
 
 interface ProjectModalProps {
   project: Project;
@@ -13,7 +14,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     const [showFullAbstract, setShowFullAbstract] = React.useState(false);
     const [alasan, setAlasan] = React.useState("");
     const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [successMessage, setSuccessMessage] = React.useState("");
+    // Hapus successMessage, pakai toast
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
     React.useEffect(() => {
@@ -36,59 +37,36 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   }
 
   const handleSubmit = async () => {
-  if (!alasan.trim()) return;
-
-  setIsSubmitting(true);
-
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/pilih-capstone`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        capstoneId: project.id,
-        alasan: alasan,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      // Ambil pesan error dari response
+    if (!alasan.trim()) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/groups/pilih-capstone`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          capstoneId: project.id,
+          alasan: alasan,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message || "Gagal mengirim pengajuan.");
+      } else {
+        toast.success("Pengajuan capstone Anda berhasil dikirim!");
+        onClose();
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Terjadi error, coba lagi.");
+    } finally {
       setIsSubmitting(false);
-      setSuccessMessage(data.message || "Gagal mengirim pengajuan.");
-      setTimeout(() => setSuccessMessage(""), 2500);
-      return;
     }
-
-    setSuccessMessage("Pengajuan capstone Anda berhasil dikirim!");
-
-    setTimeout(() => {
-      setSuccessMessage("");
-      onClose(); // tutup modal
-    }, 1500);
-
-  } catch (error) {
-    console.error(error);
-
-    setSuccessMessage("Terjadi error, coba lagi.");
-    setTimeout(() => setSuccessMessage(""), 2500);
-
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   return (
     <>
-      {successMessage && (
-        <div className="fixed top-5 right-5 z-[9999] animate-fade-in">
-          <div className="bg-orange-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
-            <span className="font-semibold">Request Terkirim</span>
-            <p className="text-sm opacity-90">{successMessage}</p>
-          </div>
-        </div>
-      )}
+      {/* Notifikasi custom dihapus, toast akan muncul otomatis */}
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
       onClick={onClose}
