@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Capstone Container
 
-## Getting Started
+## Deskripsi Aplikasi
 
-First, run the development server:
+Capstone Container adalah aplikasi manajemen proyek capstone berbasis web yang memudahkan pengelolaan data tim, anggota, dosen pembimbing, dan proses pelaporan serta notifikasi. Aplikasi ini mendukung fitur administrasi, alumni, mahasiswa, dan otentikasi pengguna.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Nama Kelompok dan Daftar Anggota
+
+**Nama Kelompok:** Kelompok Tiga  
+**Aplikasi:** Capstone Container
+
+**Daftar Anggota Kelompok:**
+- Hanifah Putri Ariani (22/504042/TK/55111) - Ketua
+- Navika Berlianda Rihadatul'aisya (22/505243/TK/55277)
+- Raudha Nur Hidayatullah Susanto (22/500044/TK/54789)
+- Muhammad Haidar Syaafi' (23/521614/TK/57545)
+- Syahrul Afif Tri Anggara (23/518266/TK/57027)
+*(Silakan lengkapi nama anggota sesuai tim Anda)*
+
+## Fitur Utama
+
+1. **Centralized Capstone Repository**
+	Menyediakan wadah terpusat untuk melihat project capstone terdahulu, lengkap dengan ringkasan, dosen pembimbing, dan tim terkait. Mahasiswa dapat menemukan referensi yang relevan dengan kebutuhan kelompok mereka.
+
+2. **Project Continuation Request Flow**
+	Mahasiswa dapat mengajukan permintaan untuk melanjutkan project alumni melalui alur struktur yang jelas. Setiap request disertai alasan, dan alumni dapat melihat detail tim sebelum memberi keputusan.
+
+3. **Alumni Approval System**
+	Alumni memiliki notification khusus untuk meninjau, menyetujui, atau menolak pengajuan kelanjutan project. Proses ini menjamin kelanjutan project sesuai perencanaan dan ekspektasi alumni selaku pemilik.
+
+4. **Admin-Controlled Master Data**
+	Admin memegang kendali penuh atas data mahasiswa, alumni, dosen, dan tim, memastikan seluruh informasi valid dan konsisten. Setiap perubahan data terpusat sehingga error dapat diminimalisir.
+
+5. **Automated Project Availability Status**
+	Setiap project otomatis berubah status menjadi Unavailable jika telah menerima tiga request aktif, untuk menjaga fairness bagi seluruh kelompok.
+
+6. **Document Integration via Google Drive**
+	Unggah proposal, laporan, dan dokumen terkait melalui integrasi Google Drive, memudahkan pengelolaan file tanpa beban penyimpanan server tambahan.
+
+## Struktur Folder dan File
+
+```
+FEPAW3/
+├── app/
+│   ├── admin/
+│   │   ├── components/
+│   │   ├── dashboard/
+│   │   ├── page.tsx
+│   ├── alumni/
+│   │   ├── components/
+│   │   ├── types/
+│   │   ├── utils/
+│   ├── authentication/
+│   ├── components/
+│   ├── mahasiswa/
+│   │   ├── components/
+│   ├── register/
+│   ├── test/
+│   ├── utils/
+│   ├── config.ts
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+├── frontend/
+│   └── lib/
+├── lib/
+├── public/
+├── package.json
+├── tsconfig.json
+├── next.config.ts
+├── postcss.config.mjs
+├── eslint.config.mjs
+├── README.md
+└── ...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Teknologi yang Digunakan
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework:** Next.js (React)
+- **Bahasa:** TypeScript, JavaScript
+- **UI:** Tailwind CSS, Headless UI, react-feather, lucide-react
+- **State/Data:** React Hooks (`useState`, `useEffect`), SWR
+- **Notifikasi:** react-hot-toast
+- **Linting & Tipe:** ESLint, TypeScript
+- **API:** Fetch API untuk komunikasi backend
+- **Utility:** clsx, class-variance-authority, jwt-decode
+- **Build Tools:** PostCSS, Autoprefixer
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+1. **Clone repository**
+	```bash
+	git clone <repo-url>
+	cd FEPAW3
+	```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies**
+	```bash
+	npm install
+	```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Jalankan aplikasi (development)**
+	```bash
+	npm run dev
+	```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Build aplikasi (production)**
+	```bash
+	npm run build
+	npm start
+	```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Linting (optional)**
+	```bash
+	npm run lint
+	```
