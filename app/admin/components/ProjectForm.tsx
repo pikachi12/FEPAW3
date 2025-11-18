@@ -242,7 +242,9 @@ export default function ProjectForm({
         const lecturersData = await lecturersRes.json();
         console.log(lecturersData);
 
-        setAlumni(alumniData || []);
+        // Filter alumni yang belum punya grup
+        const filteredAlumni = (alumniData || []).filter((a: any) => !a.hasGroup);
+        setAlumni(filteredAlumni);
         setLecturers(lecturersData || []);
       } catch (error) {
         console.error("Failed to fetch data:", error);

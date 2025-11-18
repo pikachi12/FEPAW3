@@ -44,7 +44,9 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
       { credentials: "include" }
     );
     const json = await res.json();
-    const data = json.data || json;
+    // Filter hanya user yang belum punya grup dan role mahasiswa
+    const data = (json.data || json)
+      .filter((u: any) => !u.hasGroup && u.role === "mahasiswa");
     setKetuaList(data);
     setAnggotaList(data);
   };
@@ -91,7 +93,10 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
       toast.error("Maksimal 4 anggota!", { duration: 5000 });
       return;
     }
-
+    if (person.id === selectedKetua) {
+      toast.error("User sudah dipilih sebagai ketua!", { duration: 5000 });
+      return;
+    }
     setSelectedAnggota([...selectedAnggota, person]);
   };
 
@@ -200,14 +205,16 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
             />
             <Combobox.Options className="absolute z-10 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white border border-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {anggotaList.filter((a) =>
-                (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase())
+                (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase()) &&
+                !selectedAnggota.some((ang) => ang.id === a.id)
               ).length === 0 ? (
                 <div className="cursor-default select-none px-4 py-2 text-gray-700">
                   Tidak ada hasil
                 </div>
               ) : (
                 anggotaList.filter((a) =>
-                  (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase())
+                  (a.name || a.nama || a.email)?.toLowerCase().includes(ketuaQuery.toLowerCase()) &&
+                  !selectedAnggota.some((ang) => ang.id === a.id)
                 ).map((a) => (
                   <Combobox.Option
                     key={a.id}
