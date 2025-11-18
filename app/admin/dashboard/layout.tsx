@@ -23,7 +23,7 @@ export default function DashboardLayout({
       {/* 'ml-64' (margin-left: 16rem) diletakkan di sini
            karena Sidebar (w-64) ada di layout ini.
       */}
-      <main className="flex-1 ml-64 p-8">
+      <main className="flex-1 p-8">
         
         {/* 'children' adalah tempat di mana 'page.tsx' Anda
             (misal: Halaman Add Data, Halaman All Mahasiswa)

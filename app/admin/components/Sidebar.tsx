@@ -1,8 +1,9 @@
-"use client"; // Diperlukan untuk state dropdown dan deteksi 'active' link
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Menu } from 'react-feather';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-// Import ikon-ikon yang relevan dari react-feather
 import { 
   Layout, 
   Users, 
@@ -11,16 +12,17 @@ import {
   LogOut, 
   ChevronDown,
   User as UserIcon,
-  type Icon as FeatherIcon // 'User' untuk profil
+  X,
+  type Icon as FeatherIcon
 } from 'react-feather';
 
 interface NavItemProps {
   href: string;
   icon: FeatherIcon;
   label: string;
-  isActive?: boolean; // '?' menandakan opsional
+  isActive?: boolean;
   hasDropdown?: boolean;
-  onToggle?: () => void; // Tipe data untuk fungsi
+  onToggle?: () => void;
   isOpen?: boolean;
 }
 
@@ -29,24 +31,23 @@ interface SubNavItemProps {
   label: string;
 }
 
-// Sub-komponen kecil untuk Navigasi Item
+// --- Sub-komponen NavItem ---
 function NavItem({ 
   href, 
-  icon: Icon, // Langsung rename 'icon' menjadi 'Icon'
+  icon: Icon, 
   label, 
   isActive, 
   hasDropdown, 
   onToggle, 
   isOpen 
 }: NavItemProps) {
-
   return (
     <li>
       <Link
         href={href}
         onClick={(e) => {
           if (hasDropdown) {
-            e.preventDefault(); // Mencegah navigasi jika ini adalah dropdown
+            e.preventDefault();
             if (onToggle) onToggle();
           }
         }}
@@ -70,7 +71,7 @@ function NavItem({
   );
 }
 
-// Sub-komponen untuk item di dalam dropdown
+// --- Sub-komponen SubNavItem ---
 function SubNavItem({ href, label }: SubNavItemProps) {
   return (
     <li>
@@ -85,20 +86,28 @@ function SubNavItem({ href, label }: SubNavItemProps) {
 }
 
 export default function Sidebar() {
-  const [isDataPersonOpen, setDataPersonOpen] = useState(false); // Default open seperti di gambar
+  const [isDataPersonOpen, setDataPersonOpen] = useState(false);
   const [isCapstoneTeamsOpen, setCapstoneTeamsOpen] = useState(false);
   const [isCapstoneProjectsOpen, setCapstoneProjectsOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // State untuk user data agar aman dari Hydration Error
+  const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
 
-  // Di aplikasi nyata, Anda akan menggunakan `usePathname` untuk menentukan 'isActive'
-  const currentPath = '/dashboard'; 
+  const pathname = usePathname();
+  const currentPath = pathname;
 
-  const getUserData = () => {
+  // Ambil data user hanya setelah komponen di-mount (client-side)
+  useEffect(() => {
     const userStr = localStorage.getItem("user");
     if (userStr) {
-      return JSON.parse(userStr);
+      try {
+        setUser(JSON.parse(userStr));
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
     }
-    return null;
-  };
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -118,101 +127,141 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col border-r border-gray-200 bg-white">
-      {/* 1. Logo/Header */}
-      <div className="flex h-16 items-center px-6">
-        <h1 className="text-xl font-bold text-gray-900">CAPCON</h1>
-        <span className="ml-2 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold text-gray-600">
-          Container
-        </span>
-      </div>
+    <>
+      {/* Mobile menu button */}
+      <button
+        className="fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow md:hidden border border-gray-200"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open sidebar"
+      >
+        <Menu className="h-6 w-6 text-gray-700" />
+      </button>
 
-      {/* 2. Menu Navigasi */}
-      <nav className="flex-1 overflow-y-auto px-4 py-4">
-        <ul className="space-y-1">
-          <NavItem 
-            href="/admin" 
-            icon={Layout} 
-            label="Dashboard" 
-            isActive={currentPath === '/dashboard'}
-          />
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* SIDEBAR UTAMA */}
+      <aside
+        className={`
+          /* Mobile Styles: Fixed position, full height */
+          fixed left-0 top-0 z-50 h-screen
           
-          {/* Item dengan Dropdown */}
-          <NavItem 
-            href="#" 
-            icon={Users} 
-            label="Data Person" 
-            hasDropdown 
-            isOpen={isDataPersonOpen}
-            onToggle={() => setDataPersonOpen(!isDataPersonOpen)}
-          />
-          {/* Konten Dropdown */}
-          {isDataPersonOpen && (
-            <ul className="mt-1 space-y-1">
-              <SubNavItem href="/admin/dashboard/data-person/add-data" label="Add Data" />
-              <SubNavItem href="/admin/dashboard/data-person/all-mahasiswa" label="All Mahasiswa/Alumni" />
-              <SubNavItem href="/admin/dashboard/data-person/all-dosen" label="All Dosen" />
-            </ul>
-          )}
+          /* Desktop Styles: Sticky position, full height */
+          md:sticky md:top-0 md:z-0 md:h-screen
 
-          <NavItem 
-            href="/dashboard/capstone-teams" 
-            icon={Briefcase} 
-            label="Capstone Teams" 
-            hasDropdown 
-            isOpen={isCapstoneTeamsOpen}
-            onToggle={() => setCapstoneTeamsOpen(!isCapstoneTeamsOpen)}
-            // 'hasDropdown' dan 'isOpen' bisa ditambahkan di sini jika diperlukan
-          />
-          {isCapstoneTeamsOpen && (
-            <ul className="mt-1 space-y-1">
-              <SubNavItem href="/admin/dashboard/capstone-teams/add-team" label="Add Team" />
-              <SubNavItem href="/admin/dashboard/capstone-teams/all-teams" label="All Teams" />
-            </ul>
-          )}
-
-          <NavItem 
-            href="/dashboard/capstone-projects" 
-            icon={FileText} 
-            label="Capstone Projects" 
-            hasDropdown 
-            isOpen={isCapstoneProjectsOpen}
-            onToggle={() => setCapstoneProjectsOpen(!isCapstoneProjectsOpen)}
-            // 'hasDropdown' dan 'isOpen' bisa ditambahkan di sini jika diperlukan
-          />
-          {isCapstoneProjectsOpen && (
-            <ul className="mt-1 space-y-1">
-              <SubNavItem href="/admin/dashboard/capstone-projects/add-project" label="Add Project" />
-              <SubNavItem href="/admin/dashboard/capstone-projects/all-projects" label="All Projects" />
-            </ul>
-          )}
-
-        <div className="mb-4">
+          /* Common Styles */
+          flex w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-300
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+        `}
+      >
+        {/* 1. Logo/Header */}
+        <div className="flex h-16 items-center px-6 flex-shrink-0">
+          <h1 className="text-xl font-bold text-gray-900">CAPCON</h1>
+          <span className="ml-2 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold text-gray-600">
+            Container
+          </span>
           <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-md px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            className="ml-auto md:hidden p-2 rounded-md text-gray-500 hover:text-gray-700"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
           >
-            <LogOut className="h-5 w-5" />
-            <span>Sign Out</span>
+            <X className="h-5 w-5" />
           </button>
         </div>
-          
-        </ul>
-      </nav>
 
-      {/* 3. Footer (Sign Out & User Profile) */}
-      <div className="mt-auto border-t border-gray-200 p-4">
-        {/* User Profile */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600">
-            <UserIcon className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900">{getUserData()?.name}</p>
-            <p className="text-xs text-gray-500">{getUserData()?.email}</p>
+        {/* 2. Menu Navigasi (Scrollable area) */}
+        <nav className="flex-1 overflow-y-auto px-4 py-4">
+          <ul className="space-y-1">
+            <NavItem 
+              href="/admin" 
+              icon={Layout} 
+              label="Dashboard" 
+              isActive={currentPath === '/admin'}
+            />
+            
+            <NavItem 
+              href="#" 
+              icon={Users} 
+              label="Data Person" 
+              hasDropdown 
+              isOpen={isDataPersonOpen}
+              onToggle={() => setDataPersonOpen(!isDataPersonOpen)}
+            />
+            {isDataPersonOpen && (
+              <ul className="mt-1 space-y-1">
+                <SubNavItem href="/admin/dashboard/data-person/add-data" label="Add Data" />
+                <SubNavItem href="/admin/dashboard/data-person/all-mahasiswa" label="All Mahasiswa/Alumni" />
+                <SubNavItem href="/admin/dashboard/data-person/all-dosen" label="All Dosen" />
+              </ul>
+            )}
+
+            <NavItem 
+              href="/dashboard/capstone-teams" 
+              icon={Briefcase} 
+              label="Capstone Teams" 
+              hasDropdown 
+              isOpen={isCapstoneTeamsOpen}
+              onToggle={() => setCapstoneTeamsOpen(!isCapstoneTeamsOpen)}
+              isActive={currentPath.startsWith('/admin/dashboard/capstone-teams')}
+            />
+            {isCapstoneTeamsOpen && (
+              <ul className="mt-1 space-y-1">
+                <SubNavItem href="/admin/dashboard/capstone-teams/add-team" label="Add Team" />
+                <SubNavItem href="/admin/dashboard/capstone-teams/all-teams" label="All Teams" />
+              </ul>
+            )}
+
+            <NavItem 
+              href="/dashboard/capstone-projects" 
+              icon={FileText} 
+              label="Capstone Projects" 
+              hasDropdown 
+              isOpen={isCapstoneProjectsOpen}
+              onToggle={() => setCapstoneProjectsOpen(!isCapstoneProjectsOpen)}
+              isActive={currentPath.startsWith('/admin/dashboard/capstone-projects')}
+            />
+            {isCapstoneProjectsOpen && (
+              <ul className="mt-1 space-y-1">
+                <SubNavItem href="/admin/dashboard/capstone-projects/add-project" label="Add Project" />
+                <SubNavItem href="/admin/dashboard/capstone-projects/all-projects" label="All Projects" />
+              </ul>
+            )}
+
+            <div className="pt-4">
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-md px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              >
+                <LogOut className="h-5 w-5" />
+                <span>Sign Out</span>
+              </button>
+            </div>
+            
+          </ul>
+        </nav>
+
+        {/* 3. Footer (User Profile) */}
+        <div className="flex-shrink-0 border-t border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600">
+              <UserIcon className="h-6 w-6" />
+            </div>
+            <div className="overflow-hidden">
+              <p className="truncate text-sm font-semibold text-gray-900">
+                {user ? user.name : 'Loading...'}
+              </p>
+              <p className="truncate text-xs text-gray-500">
+                {user ? user.email : '...'}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

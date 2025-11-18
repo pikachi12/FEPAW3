@@ -101,19 +101,19 @@ export default function NotificationCard() {
 
 
   return (
-    <div className="flex h-full flex-col rounded-lg bg-white p-5 border border-gray-300">
-      <h3 className="mb-4 text-sm font-semibold text-gray-700">Report Notification</h3>
+    <div className="flex h-full flex-col rounded-lg bg-white p-3 sm:p-5 border border-gray-300 max-w-full sm:max-w-md mx-auto">
+      <h3 className="mb-4 text-xs sm:text-sm font-semibold text-gray-700 text-center sm:text-left">Report Notification</h3>
       <div className="space-y-3">
         {loading ? (
-          <p className="text-gray-500">Memuat data...</p>
+          <p className="text-gray-500 text-xs sm:text-sm">Memuat data...</p>
         ) : error ? (
-          <p className="text-red-500">{error}</p>
+          <p className="text-red-500 text-xs sm:text-sm">{error}</p>
         ) : !current ? (
-          <p className="text-gray-500">Tidak ada laporan</p>
+          <p className="text-gray-500 text-xs sm:text-sm">Tidak ada laporan</p>
         ) : (
           <>
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-800">Report {activeIdx + 1} {reports.length > 1 && `/ ${reports.length}`}</p>
+            <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-2">
+              <p className="text-xs sm:text-sm font-medium text-gray-800">Report {activeIdx + 1} {reports.length > 1 && `/ ${reports.length}`}</p>
               {reports.length > 1 && (
                 <div className="flex gap-2">
                   <button onClick={handlePrev} disabled={activeIdx === 0} className="p-1 rounded hover:bg-gray-100 disabled:opacity-50">
@@ -130,19 +130,19 @@ export default function NotificationCard() {
             <div>
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-500">Alasan</span>
+                <span className="text-xs sm:text-sm text-gray-500">Alasan</span>
               </div>
-              <p className="mt-1 pl-6 text-sm font-medium text-red-600">
+              <p className="mt-1 pl-6 text-xs sm:text-sm font-medium text-red-600">
                 {current.reportIssue?.description ?? '-'}
               </p>
             </div>
           </>
         )}
       </div>
-      <div className="mt-auto pt-4 text-right">
+      <div className="mt-auto pt-4 text-center sm:text-right">
         <button
           onClick={handleResolve}
-          className="rounded-lg bg-orange-600 px-6 py-2 text-sm font-semibold text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+          className="rounded-lg bg-orange-600 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
         >
           Done
         </button>

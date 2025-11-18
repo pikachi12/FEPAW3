@@ -95,88 +95,100 @@ export default function AllDosenPage() {
   // Helper untuk cek filter aktif
   const isFilterActive = selectedVerification !== "All" || selectedClaim !== "All";
 
+  // Filtered data
+  const filteredData = data.filter((p) =>
+    search.trim() === ""
+      ? true
+      : p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.email.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div>
+    <div className="py-4 md:px-6 lg:px-8">
       {/* Breadcrumbs */}
-      <div className="mb-4 text-sm text-gray-500">
+      <div className="mb-3 md:mb-4 text-xs md:text-sm text-gray-500">
         Data Person &gt; <span className="font-medium text-gray-700">All Dosen</span>
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl font-semibold text-gray-900">All Dosen</h1>
-      <p className="mb-6 text-sm text-gray-600">List of all lecturers in the system</p>
+      <h1 className="text-xl md:text-2xl font-semibold text-gray-900">All Dosen</h1>
+      <p className="mb-4 md:mb-6 text-xs md:text-sm text-gray-600">
+        List of all lecturers in the system
+      </p>
 
       {/* Table Container */}
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
 
         {/* Toolbar */}
-        <div className="flex items-center gap-2 border-b border-gray-200 p-4">
+        <div className="border-b border-gray-200 p-3 md:p-4">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2">
 
-          {/* Filter dropdown tanpa Prodi */}
-          <div className="relative">
-            <button
-              onClick={() => setOpenFilter((o) => !o)}
-              className={`flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 relative`}
-            >
-              Filters <ChevronDown className="h-4 w-4" />
-              {isFilterActive && (
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border border-white"></span>
-              )}
-            </button>
-
-            {openFilter && (
-              <div
-                ref={ref}
-                className="absolute left-0 mt-2 w-64 bg-white border rounded-lg shadow-lg p-4 z-20"
+            {/* Filter dropdown */}
+            <div className="relative" ref={ref}>
+              <button
+                onClick={() => setOpenFilter((o) => !o)}
+                className={`flex items-center justify-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 relative w-full md:w-auto`}
               >
-                {/* VERIFIED */}
-                <p className="text-xs font-medium mb-1 text-gray-600">
-                  Verification Status
-                </p>
-                <select
-                  value={selectedVerification}
-                  onChange={(e) => setSelectedVerification(e.target.value)}
-                  className="w-full border px-2 py-1 mb-3 rounded-md text-sm"
-                >
-                  <option value="All">All</option>
-                  <option value="true">Verified</option>
-                  <option value="false">Unverified</option>
-                </select>
+                <span>Filters</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${openFilter ? 'rotate-180' : ''}`} />
+                {isFilterActive && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border border-white"></span>
+                )}
+              </button>
 
-                {/* CLAIM STATUS */}
-                <p className="text-xs font-medium mb-1 text-gray-600">
-                  Claim Status
-                </p>
-                <select
-                  value={selectedClaim}
-                  onChange={(e) => setSelectedClaim(e.target.value)}
-                  className="w-full border px-2 py-1 rounded-md text-sm"
+              {openFilter && (
+                <div
+                  className="absolute left-0 mt-2 w-full md:w-64 bg-white border rounded-lg shadow-lg p-4 z-20"
                 >
-                  <option value="All">All</option>
-                  <option value="true">Claimed</option>
-                  <option value="false">Unclaimed</option>
-                </select>
-              </div>
-            )}
-          </div>
+                  {/* VERIFIED */}
+                  <p className="text-xs font-medium mb-1 text-gray-600">
+                    Verification Status
+                  </p>
+                  <select
+                    value={selectedVerification}
+                    onChange={(e) => setSelectedVerification(e.target.value)}
+                    className="w-full border px-2 py-1 mb-3 rounded-md text-sm"
+                  >
+                    <option value="All">All</option>
+                    <option value="true">Verified</option>
+                    <option value="false">Unverified</option>
+                  </select>
 
-          {/* Search */}
-          <div className="relative ml-auto">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search className="h-5 w-5 text-gray-400" />
+                  {/* CLAIM STATUS */}
+                  <p className="text-xs font-medium mb-1 text-gray-600">
+                    Claim Status
+                  </p>
+                  <select
+                    value={selectedClaim}
+                    onChange={(e) => setSelectedClaim(e.target.value)}
+                    className="w-full border px-2 py-1 rounded-md text-sm"
+                  >
+                    <option value="All">All</option>
+                    <option value="true">Claimed</option>
+                    <option value="false">Unclaimed</option>
+                  </select>
+                </div>
+              )}
             </div>
-            <input
-              type="text"
-              placeholder="Search name/email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 border border-gray-300 rounded-md px-3 pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
-            />
+
+            {/* Search */}
+            <div className="relative w-full md:flex-1 md:ml-auto">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <Search className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search name/email..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 border border-gray-300 rounded-md px-3 pl-9 md:pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
+        {/* Table - Desktop */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -199,47 +211,77 @@ export default function AllDosenPage() {
             </thead>
 
             <tbody className="divide-y divide-gray-200 bg-white">
-              {data.filter((p) =>
-                search.trim() === ""
-                  ? true
-                  : p.name.toLowerCase().includes(search.toLowerCase()) ||
-                    p.email.toLowerCase().includes(search.toLowerCase())
-              ).length === 0 ? (
+              {filteredData.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm">
                     Tidak ada data dosen ditemukan
                   </td>
                 </tr>
               ) : (
-                data
-                  .filter((p) =>
-                    search.trim() === ""
-                      ? true
-                      : p.name.toLowerCase().includes(search.toLowerCase()) ||
-                        p.email.toLowerCase().includes(search.toLowerCase())
-                  )
-                  .map((person, index) => (
-                    <tr
-                      key={person.id}
-                      className="cursor-pointer hover:bg-gray-50"
-                      onClick={() => handleRowClick(person)}
-                    >
-                      <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{person.nip || "-"}</td>
-                      <td className="px-6 py-4">
-                        {person.name}
-                      </td>
-                      <td className="px-6 py-4">
-                        {person.prodi || "-"}
-                      </td>
-                      <td className="px-6 py-4 capitalize">
-                        {person.role}
-                      </td>
-                    </tr>
-                  ))
+                filteredData.map((person, index) => (
+                  <tr
+                    key={person.id}
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => handleRowClick(person)}
+                  >
+                    <td className="px-6 py-4">{index + 1}</td>
+                    <td className="px-6 py-4">{person.nip || "-"}</td>
+                    <td className="px-6 py-4">{person.name}</td>
+                    <td className="px-6 py-4">{person.prodi || "-"}</td>
+                    <td className="px-6 py-4 capitalize">{person.role}</td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Card View - Mobile */}
+        <div className="md:hidden divide-y divide-gray-200">
+          {filteredData.length === 0 ? (
+            <div className="px-4 py-8 text-center text-gray-400 text-sm">
+              Tidak ada data dosen ditemukan
+            </div>
+          ) : (
+            filteredData.map((person, index) => (
+              <div
+                key={person.id}
+                className="p-4 hover:bg-gray-50 cursor-pointer active:bg-gray-100"
+                onClick={() => handleRowClick(person)}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900 text-base mb-1">
+                      {person.name}
+                    </div>
+                    <div className="text-xs text-gray-500 mb-2">
+                      #{index + 1} · {person.nip || "No NIP"}
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex items-center text-gray-600">
+                    <span className="text-xs font-medium text-gray-500 w-20">
+                      Prodi:
+                    </span>
+                    <span className="text-xs">{person.prodi || "-"}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <span className="text-xs font-medium text-gray-500 w-20">
+                      Email:
+                    </span>
+                    <span className="text-xs truncate">{person.email}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <span className="text-xs font-medium text-gray-500 w-20">
+                      Role:
+                    </span>
+                    <span className="text-xs capitalize">{person.role}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

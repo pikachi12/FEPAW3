@@ -100,29 +100,30 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <main className="flex-1 ml-64 p-8">
-        <h1 className="mb-3 text-2xl font-semibold text-gray-800">Dashboard</h1>
-        
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+      <div className="w-full md:w-64">
+        <Sidebar />
+      </div>
+      <main className="flex-1 p-3 sm:p-4 md:p-8">
+        <h1 className="mb-3 text-xl sm:text-2xl font-semibold text-gray-800 text-center md:text-left">Dashboard</h1>
+
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1 space-y-6">
-            
             {/* Tampilkan Pesan Error jika ada, SWR akan tetap mencoba retry di background */}
             {isError && (
-              <div className="p-4 bg-red-100 text-red-700 rounded-md border border-red-200">
+              <div className="p-4 bg-red-100 text-red-700 rounded-md border border-red-200 text-xs sm:text-sm">
                 Gagal memuat data. Sedang mencoba menghubungkan kembali...
               </div>
             )}
 
             {/* Row Atas: Group Status Overview */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-800">Group Status Overview</h2>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-800 text-center md:text-left">Group Status Overview</h2>
               {isLoading ? (
                  // Skeleton Loading Sederhana
                  <div className="mt-4 h-32 w-full bg-gray-200 animate-pulse rounded-lg"></div>
               ) : (
-                <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
                   {groupStatusCards.map((card, idx) => (
                     <StatCard key={idx} {...card} />
                   ))}
@@ -132,11 +133,11 @@ export default function DashboardPage() {
 
             {/* Row Bawah: Capstones Status Overview */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-800">Capstones Status Overview</h2>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-800 text-center md:text-left">Capstones Status Overview</h2>
               {isLoading ? (
                  <div className="mt-4 h-32 w-full bg-gray-200 animate-pulse rounded-lg"></div>
               ) : (
-                <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
                   {capstoneStatusCards.map((card, idx) => (
                     <StatCard key={idx} {...card} />
                   ))}
@@ -145,15 +146,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="w-full lg:w-1/3 xl:w-1/4">
+          <div className="w-full lg:w-1/3 xl:w-1/4 mt-4 lg:mt-0">
             <NotificationCard />
           </div>
         </div>
 
         <div className="mt-8 space-y-8">
           {/* Note: Jika tabel ini butuh fetch data juga, sebaiknya gunakan SWR di dalamnya juga */}
-          <CapstoneTeamsTable />
-          <CapstoneProjectsTable />
+          <div className="w-full overflow-x-auto">
+            <CapstoneTeamsTable />
+          </div>
+          <div className="w-full overflow-x-auto">
+            <CapstoneProjectsTable />
+          </div>
         </div>
       </main>
     </div>

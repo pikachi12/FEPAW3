@@ -146,7 +146,7 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-4xl rounded-lg border p-6 bg-white shadow-sm space-y-6"
+      className="max-w-4xl rounded-lg border p-6 bg-white space-y-6"
     >
       {/* Tema + Tahun */}
       <div className="grid grid-cols-2 gap-4">
