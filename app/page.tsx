@@ -171,7 +171,6 @@ useEffect(() => {
           onClose={handleCloseModal} 
         />
       )}
-
     </main>
     </>
   );
