@@ -47,33 +47,26 @@ export default function CapstoneProjectTable() {
     (p[field] ?? "").toString().toLowerCase();
 
   // Fetch
-  useEffect(() => {
-    let mounted = true;
+  const fetchProjects = async () => {
     setLoading(true);
     setError(null);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/capstones`,
+        { credentials: "include" }
+      );
+      const data = await res.json();
+      const list = data.capstones || data || [];
+      setProjects(list);
+      setFiltered(list);
+    } catch (err) {
+      setError("Gagal mengambil data project");
+    }
+    setLoading(false);
+  };
 
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/capstones`,
-          { credentials: "include" }
-        );
-        if (!mounted) return;
-
-        const data = await res.json();
-        const list = data.capstones || data || [];
-
-        setProjects(list);
-        setFiltered(list);
-      } catch (err) {
-        setError("Gagal mengambil data project");
-      }
-
-      setLoading(false);
-    };
-
+  useEffect(() => {
     fetchProjects();
-    return () => { mounted = false; };
   }, []);
 
   // Search
@@ -187,6 +180,13 @@ export default function CapstoneProjectTable() {
               <tr>
                 <td colSpan={4} className="px-6 py-4 text-center text-red-500">
                   {error}
+                  <br />
+                  <button
+                    onClick={fetchProjects}
+                    className="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-xs"
+                  >
+                    Refresh
+                  </button>
                 </td>
               </tr>
             ) : sorted.length === 0 ? (
@@ -232,6 +232,13 @@ export default function CapstoneProjectTable() {
         ) : error ? (
           <div className="bg-white rounded-lg border border-red-200 p-4 text-center text-red-500">
             {error}
+            <br />
+            <button
+              onClick={fetchProjects}
+              className="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-xs"
+            >
+              Refresh
+            </button>
           </div>
         ) : sorted.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-4 text-center text-gray-500">

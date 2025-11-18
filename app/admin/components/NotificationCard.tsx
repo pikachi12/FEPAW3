@@ -2,6 +2,7 @@
 // Import ikon-ikon yang relevan
 import { Calendar, Users, AlertCircle, ChevronLeft, ChevronRight, type Icon as FeatherIcon } from 'react-feather';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface DetailRowProps {
   icon: FeatherIcon; // Tipe 'icon' adalah komponen React dari feather
@@ -82,7 +83,7 @@ export default function NotificationCard() {
     const data = await res.json();
     
     if (!res.ok) {
-      alert(data.message || "Gagal menyelesaikan laporan");
+          toast.error(data.message || "Gagal menyelesaikan laporan");
       return;
     }
 
@@ -93,9 +94,9 @@ export default function NotificationCard() {
       prev >= updated.length ? updated.length - 1 : prev
     );
 
-    alert("Issue resolved successfully!");
+        toast.success("Issue resolved successfully!");
   } catch (err) {
-    alert("Terjadi kesalahan saat resolve issue");
+        toast.error("Terjadi kesalahan saat resolve issue");
   }
 };
 
