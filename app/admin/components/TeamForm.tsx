@@ -126,18 +126,24 @@ export default function TeamForm({ mode = "add", groupId, initialData }: TeamFor
         credentials: "include",
         body: JSON.stringify(body),
       });
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        toast.error("Gagal menyimpan tim!", { duration: 5000 });
+        const message = data?.message || data?.error || "Gagal menyimpan tim!";
+        console.error("Create/Edit team failed:", res.status, data);
+        toast.error(message, { duration: 6000 });
         setLoading(false);
         return;
       }
-      toast.success(isEditMode ? "Team berhasil diupdate!" : "Team berhasil dibuat!", { duration: 5000 });
+
+      // Success: show server message when available
+      toast.success(data?.message || (isEditMode ? "Team berhasil diupdate!" : "Team berhasil dibuat!"), { duration: 5000 });
       setTimeout(() => {
         window.location.href = "/admin/dashboard/capstone-teams/all-teams";
       }, 800);
     } catch {
-      toast.error("Gagal menyimpan tim!", { duration: 5000 });
+      toast.error("Gagal menyimpan tim! Periksa koneksi atau console.", { duration: 6000 });
+      console.error("Exception when submitting team create/edit");
       setLoading(false);
     }
   };
