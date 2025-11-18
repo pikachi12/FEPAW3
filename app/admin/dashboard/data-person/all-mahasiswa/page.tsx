@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Search, ChevronDown, Filter } from "react-feather";
+import AdminPagination from "@/app/admin/components/AdminPagination";
 import PersonCardModal from "@/app/admin/components/modals/PersonCardModal";
 
 export interface PersonData {
@@ -15,10 +16,14 @@ export interface PersonData {
   isClaimed: boolean;
 }
 
-export default function AllMahasiswaPage() {
+export default function Page() {
   const [users, setUsers] = useState<PersonData[]>([]);
   const [filtered, setFiltered] = useState<PersonData[]>([]);
   const [search, setSearch] = useState("");
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   // Filter states
   const [categoryRole, setCategoryRole] = useState("mahasiswa,alumni");
@@ -116,6 +121,9 @@ export default function AllMahasiswaPage() {
 
   // Helper untuk cek filter aktif
   const isFilterActive = filterProdi !== "All" || filterVerified !== "All" || filterClaimed !== "All";
+
+  // Pagination logic
+  const paginatedFiltered = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <div className="py-4 md:px-6 lg:px-8 max-w-full overflow-hidden">
@@ -257,20 +265,20 @@ export default function AllMahasiswaPage() {
             </thead>
 
             <tbody className="bg-white divide-y divide-gray-200">
-              {filtered.length === 0 ? (
+              {paginatedFiltered.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm">
                     Tidak ada data ditemukan
                   </td>
                 </tr>
               ) : (
-                filtered.map((p, i) => (
+                paginatedFiltered.map((p, i) => (
                   <tr
                     key={p.id}
                     className="hover:bg-gray-50 cursor-pointer"
                     onClick={() => handleRowClick(p)}
                   >
-                    <td className="px-6 py-4">{i + 1}</td>
+                    <td className="px-6 py-4">{(page - 1) * rowsPerPage + i + 1}</td>
                     <td className="px-6 py-4">{p.nim}</td>
                     <td className="px-6 py-4">{p.name}</td>
                     <td className="px-6 py-4">{p.prodi}</td>
@@ -280,16 +288,29 @@ export default function AllMahasiswaPage() {
               )}
             </tbody>
           </table>
+          {/* Pagination Desktop */}
+          <div className="py-4 flex justify-end">
+            <AdminPagination
+              total={filtered.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+              onRowsPerPageChange={(rows) => {
+                setRowsPerPage(rows);
+                setPage(1);
+              }}
+            />
+          </div>
         </div>
 
         {/* CARD VIEW - Mobile */}
         <div className="md:hidden divide-y divide-gray-200">
-          {filtered.length === 0 ? (
+          {paginatedFiltered.length === 0 ? (
             <div className="px-4 py-8 text-center text-gray-400 text-sm">
               Tidak ada data ditemukan
             </div>
           ) : (
-            filtered.map((p, i) => (
+            paginatedFiltered.map((p, i) => (
               <div
                 key={p.id}
                 className="p-4 hover:bg-gray-50 cursor-pointer active:bg-gray-100"
@@ -301,7 +322,7 @@ export default function AllMahasiswaPage() {
                       {p.name}
                     </div>
                     <div className="text-xs text-gray-500 mb-2 break-words">
-                      #{i + 1} · {p.nim}
+                      #{(page - 1) * rowsPerPage + i + 1} · {p.nim}
                     </div>
                   </div>
                 </div>
@@ -328,6 +349,19 @@ export default function AllMahasiswaPage() {
               </div>
             ))
           )}
+          {/* Pagination Mobile */}
+          <div className="py-4 flex justify-center">
+            <AdminPagination
+              total={filtered.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+              onRowsPerPageChange={(rows) => {
+                setRowsPerPage(rows);
+                setPage(1);
+              }}
+            />
+          </div>
         </div>
       </div>
 

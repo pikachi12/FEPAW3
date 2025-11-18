@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Search, ChevronDown } from "react-feather";
 import ProjectCardModal from "@/app/admin/components/modals/ProjectCardModal";
+import Pagination from "@/app/admin/components/AdminPagination";
 
 export interface ProjectData {
   id: string;
@@ -19,7 +20,7 @@ export interface ProjectData {
   hasil?: string[];
 }
 
-export default function AllProjectsPage() {
+export default function Page() {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
@@ -31,6 +32,10 @@ export default function AllProjectsPage() {
 
   // Mobile filter toggle
   const [showFilters, setShowFilters] = useState(false);
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   // Fetch data dari backend
   useEffect(() => {
@@ -70,9 +75,11 @@ export default function AllProjectsPage() {
     const matchesSearch = p.judul.toLowerCase().includes(search.toLowerCase());
     const matchesKategori = kategori === "All" || p.kategori === kategori;
     const matchesStatus = status === "All" || p.status === status;
-
     return matchesSearch && matchesKategori && matchesStatus;
   });
+
+  // Pagination logic
+  const paginatedProjects = filteredProjects.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <div className="py-4 md:px-6 lg:px-8">
@@ -101,17 +108,54 @@ export default function AllProjectsPage() {
             />
           </button>
 
-          {/* Filters - Desktop: always visible, Mobile: collapsible */}
-          <div
-            className={`${
-              showFilters ? "flex" : "hidden"
-            } md:flex flex-col md:flex-row gap-2 mb-3 md:mb-0`}
-          >
-            {/* Dropdown Kategori */}
+          {/* Mobile: Dropdown khusus filter */}
+          {showFilters && (
+            <div className="md:hidden bg-white border rounded-lg shadow-lg p-4 mb-3">
+              <select
+                value={kategori}
+                onChange={(e) => setKategori(e.target.value)}
+                className="w-full border rounded-md px-3 py-2 text-sm mb-2"
+              >
+                {kategoriList.map((k, i) => (
+                  <option key={i} value={k}>
+                    {k}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full border rounded-md px-3 py-2 text-sm mb-2"
+              >
+                {statusList.map((s, i) => (
+                  <option key={i} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Mobile: Search bar selalu tampil di bawah tombol Filters */}
+          <div className="md:hidden relative w-full mb-3">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Search className="h-4 w-4 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search title..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 border border-gray-300 rounded-md px-3 pl-9 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
+            />
+          </div>
+
+          {/* Desktop: Filters & Search sebaris */}
+          <div className="hidden md:flex flex-row md:items-center gap-2 mb-3 md:mb-0">
             <select
               value={kategori}
               onChange={(e) => setKategori(e.target.value)}
-              className="w-full md:w-auto border rounded-md px-3 py-2 text-sm"
+              className="w-full md:w-auto border rounded-md px-3 py-2 text-sm mb-0"
             >
               {kategoriList.map((k, i) => (
                 <option key={i} value={k}>
@@ -119,12 +163,10 @@ export default function AllProjectsPage() {
                 </option>
               ))}
             </select>
-
-            {/* Dropdown Status */}
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full md:w-auto border rounded-md px-3 py-2 text-sm"
+              className="w-full md:w-auto border rounded-md px-3 py-2 text-sm mb-0"
             >
               {statusList.map((s, i) => (
                 <option key={i} value={s}>
@@ -132,20 +174,18 @@ export default function AllProjectsPage() {
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Searchbar */}
-          <div className="relative w-full md:w-auto md:ml-auto">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+            <div className="relative w-full md:w-64 md:ml-auto">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <Search className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search title..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 border border-gray-300 rounded-md px-3 pl-9 md:pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Search title..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 border border-gray-300 rounded-md px-3 pl-9 md:pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-none"
-            />
           </div>
         </div>
 
@@ -169,20 +209,20 @@ export default function AllProjectsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredProjects.length === 0 ? (
+              {paginatedProjects.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-6 text-center text-gray-400 text-sm">
                     Tidak ada data project ditemukan.
                   </td>
                 </tr>
               ) : (
-                filteredProjects.map((project, index) => (
+                paginatedProjects.map((project, index) => (
                   <tr
                     key={project.id}
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => handleRowClick(project)}
                   >
-                    <td className="px-6 py-4 text-sm text-gray-700">{index + 1}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{(page - 1) * rowsPerPage + index + 1}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">{project.kategori}</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{project.judul}</td>
                     <td className="px-6 py-4 text-sm">
@@ -201,16 +241,29 @@ export default function AllProjectsPage() {
               )}
             </tbody>
           </table>
+          {/* Pagination Desktop */}
+          <div className="py-4 flex justify-end">
+            <Pagination
+              total={filteredProjects.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+              onRowsPerPageChange={(rows) => {
+                setRowsPerPage(rows);
+                setPage(1);
+              }}
+            />
+          </div>
         </div>
 
         {/* Card View - Mobile */}
         <div className="md:hidden divide-y divide-gray-200">
-          {filteredProjects.length === 0 ? (
+          {paginatedProjects.length === 0 ? (
             <div className="px-4 py-8 text-center text-gray-400 text-sm">
               Tidak ada data project ditemukan.
             </div>
           ) : (
-            filteredProjects.map((project, index) => (
+            paginatedProjects.map((project, index) => (
               <div
                 key={project.id}
                 className="p-4 hover:bg-gray-50 cursor-pointer active:bg-gray-100"
@@ -222,7 +275,7 @@ export default function AllProjectsPage() {
                       {project.judul}
                     </div>
                     <div className="text-xs text-gray-500 mb-2">
-                      #{index + 1} · {project.kategori}
+                      #{(page - 1) * rowsPerPage + index + 1} · {project.kategori}
                     </div>
                   </div>
                 </div>
@@ -240,6 +293,16 @@ export default function AllProjectsPage() {
               </div>
             ))
           )}
+          {/* Pagination Mobile */}
+          <div className="py-4 flex justify-center">
+            <Pagination
+              total={filteredProjects.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+              onRowsPerPageChange={setRowsPerPage}
+            />
+          </div>
         </div>
       </div>
 

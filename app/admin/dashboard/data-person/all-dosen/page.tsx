@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Search, ChevronDown, Filter } from "react-feather";
+import AdminPagination from "@/app/admin/components/AdminPagination";
 import PersonCardModal from "@/app/admin/components/modals/PersonCardModal";
 
 export interface DosenData {
@@ -16,13 +17,17 @@ export interface DosenData {
   isClaimed: boolean;
 }
 
-export default function AllDosenPage() {
+export default function Page() {
   const [data, setData] = useState<DosenData[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedProdi, setSelectedProdi] = useState("All");
   const [selectedVerification, setSelectedVerification] = useState("All");
   const [selectedClaim, setSelectedClaim] = useState("All");
   const [search, setSearch] = useState("");
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   const [selectedPerson, setSelectedPerson] = useState<DosenData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -102,6 +107,9 @@ export default function AllDosenPage() {
       : p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.email.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Pagination logic
+  const paginatedFiltered = filteredData.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <div className="py-4 md:px-6 lg:px-8">
@@ -211,20 +219,20 @@ export default function AllDosenPage() {
             </thead>
 
             <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredData.length === 0 ? (
+              {paginatedFiltered.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm">
                     Tidak ada data dosen ditemukan
                   </td>
                 </tr>
               ) : (
-                filteredData.map((person, index) => (
+                paginatedFiltered.map((person, index) => (
                   <tr
                     key={person.id}
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => handleRowClick(person)}
                   >
-                    <td className="px-6 py-4">{index + 1}</td>
+                    <td className="px-6 py-4">{(page - 1) * rowsPerPage + index + 1}</td>
                     <td className="px-6 py-4">{person.nip || "-"}</td>
                     <td className="px-6 py-4">{person.name}</td>
                     <td className="px-6 py-4">{person.prodi || "-"}</td>
@@ -234,16 +242,29 @@ export default function AllDosenPage() {
               )}
             </tbody>
           </table>
+          {/* Pagination Desktop */}
+          <div className="py-4 flex justify-end">
+            <AdminPagination
+              total={filteredData.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+              onRowsPerPageChange={(rows) => {
+                setRowsPerPage(rows);
+                setPage(1);
+              }}
+            />
+          </div>
         </div>
 
         {/* Card View - Mobile */}
         <div className="md:hidden divide-y divide-gray-200">
-          {filteredData.length === 0 ? (
+          {paginatedFiltered.length === 0 ? (
             <div className="px-4 py-8 text-center text-gray-400 text-sm">
               Tidak ada data dosen ditemukan
             </div>
           ) : (
-            filteredData.map((person, index) => (
+            paginatedFiltered.map((person, index) => (
               <div
                 key={person.id}
                 className="p-4 hover:bg-gray-50 cursor-pointer active:bg-gray-100"
@@ -255,7 +276,7 @@ export default function AllDosenPage() {
                       {person.name}
                     </div>
                     <div className="text-xs text-gray-500 mb-2">
-                      #{index + 1} · {person.nip || "No NIP"}
+                      #{(page - 1) * rowsPerPage + index + 1} · {person.nip || "No NIP"}
                     </div>
                   </div>
                 </div>
@@ -282,6 +303,19 @@ export default function AllDosenPage() {
               </div>
             ))
           )}
+          {/* Pagination Mobile */}
+          <div className="py-4 flex justify-center">
+            <AdminPagination
+              total={filteredData.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+              onRowsPerPageChange={(rows) => {
+                setRowsPerPage(rows);
+                setPage(1);
+              }}
+            />
+          </div>
         </div>
       </div>
 
