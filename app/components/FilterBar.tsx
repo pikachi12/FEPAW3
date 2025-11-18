@@ -79,13 +79,19 @@ export default function FilterBar({
             onClick={() => setOpen((prev) => !prev)}
             className="border rounded-md px-3 py-2 flex items-center gap-1 hover:bg-gray-100"
           >
-            Filters <ChevronDown size={18} className="text-gray-400" />
+            Filters
+            <ChevronDown
+              size={18}
+              className={`text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+            />
           </button>
 
           {/* DROPDOWN APPEARS HERE */}
-          {open && (
-          <div className="absolute left-0 mt-2 w-60 bg-white border rounded-lg shadow-lg p-4 z-20">
-            
+          <div
+            className={`absolute right-0 mt-2 w-72 sm:w-60 bg-white border rounded-lg shadow-lg p-4 z-20 overflow-x-auto transition-all duration-300 ease-in-out
+              ${open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}
+            style={{ transformOrigin: 'top right' }}
+          >
             {/* SORT BY */}
             <p className="text-sm font-semibold text-gray-700 mb-1">Sort By</p>
             <select
@@ -116,7 +122,6 @@ export default function FilterBar({
             </select>
 
           </div>
-        )}
         </div>
 
       </div>

@@ -49,7 +49,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="flex justify-between items-center py-4 px-8 border-b bg-white sticky top-0 z-10">
+    <header className="flex justify-between items-center py-4 px-8 border-b bg-white sticky top-0 z-20 h-16">
       <div className="flex items-center gap-2">
         <div className="font-bold text-lg">CAPCON</div>
         <span className="text-sm text-gray-500">Capstone Container</span>

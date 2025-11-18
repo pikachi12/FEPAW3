@@ -18,14 +18,23 @@ export default function Hero({ searchTerm, setSearchTerm }: HeroProps) {
         <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-4 drop-shadow-lg">
           Discover Projects. Continue the Journey.
         </h1>
-        <p className="text-base md:text-lg text-gray-100 text-center mb-6 drop-shadow">
+        <p className="hidden md:block text-base md:text-lg text-gray-100 text-center mb-6 drop-shadow">
           Gain inspiration, reconnect with alumni, and collaborate to continue the legacy of innovative capstone projects.
         </p>
         <div className="relative w-full max-w-xl mx-auto">
+          {/* Mobile input */}
+          <input
+            type="text"
+            placeholder="Cari inovasi..."
+            className="w-full border rounded-xl px-5 py-3 outline-none focus:ring-2 focus:ring-orange-500 bg-white md:hidden"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {/* Desktop input */}
           <input
             type="text"
             placeholder="What type of innovation inspires you most?"
-            className="w-full border rounded-xl px-5 py-3 outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+            className="w-full border rounded-xl px-5 py-3 outline-none focus:ring-2 focus:ring-orange-500 bg-white hidden md:block"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

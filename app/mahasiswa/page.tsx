@@ -64,21 +64,25 @@ export default function HomeMahasiswaPage() {
   };
 
   const fetchProjects = async () => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/capstones`);
-    const data = await res.json();
-    const mapped = mapProjects(data);
-    setProjects(mapped);
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/capstones`);
+      const data = await res.json();
+      const mapped = mapProjects(data);
+      setProjects(mapped);
 
-    // Ambil kategori unik
-    const uniqueCategories = Array.from(new Set(mapped.map((p) => p.category)));
-    setCategories(uniqueCategories);
+      // Ambil kategori unik
+      const uniqueCategories = Array.from(new Set(mapped.map((p) => p.category)));
+      setCategories(uniqueCategories);
     } catch (err) {
       console.error("Failed to fetch projects:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchSearchResults = async () => {
+    setLoading(true);
     try {
       const params = new URLSearchParams();
 
@@ -96,6 +100,8 @@ export default function HomeMahasiswaPage() {
       setProjects(mapProjects(data));
     } catch (err) {
       console.error("Search failed:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -103,10 +109,10 @@ export default function HomeMahasiswaPage() {
     fetchProjects();
   }, []);
 
-useEffect(() => {
-  const timeout = setTimeout(() => {
-    fetchSearchResults(); // karena search dan filter sama² pakai backend
-  }, 100);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      fetchSearchResults(); // karena search dan filter sama² pakai backend
+    }, 100);
 
     return () => clearTimeout(timeout);
   }, [searchTerm, selectedCategory, selectedStatus, sortBy, order]);
@@ -145,15 +151,21 @@ useEffect(() => {
         setSelectedStatus={setSelectedStatus}
       />
 
-      <section className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {paginatedProjects.map((project) => (
-          <ProjectCard 
-            key={project.id} 
-            project={project} 
-            onReadMore={handleOpenModal}
-          />
-        ))}
-      </section>
+      {loading ? (
+        <div className="max-w-6xl mx-auto px-4 py-20 text-center">
+          <p className="text-gray-500">Loading projects...</p>
+        </div>
+      ) : (
+        <section className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {paginatedProjects.map((project) => (
+            <ProjectCard 
+              key={project.id} 
+              project={project} 
+              onReadMore={handleOpenModal}
+            />
+          ))}
+        </section>
+      )}
 
       <Pagination
         total={projects.length}

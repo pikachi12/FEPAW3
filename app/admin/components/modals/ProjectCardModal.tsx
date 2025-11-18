@@ -57,7 +57,7 @@ export default function ProjectCardModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10"
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40"
       onClick={onClose}
     >
       <div
@@ -72,21 +72,47 @@ export default function ProjectCardModal({
           <X className="h-6 w-6" />
         </button>
 
+
         {/* Header */}
         <p className="mb-2 text-sm text-gray-500">{project.kategori}</p>
         <h2 className="mb-4 text-2xl font-bold text-gray-900">{project.judul}</h2>
+
+        {/* Status Section */}
+        <div className="mb-4 flex items-center">
+          {project.status === "Tersedia" ? (
+            <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+              Tersedia
+            </span>
+          ) : (
+            <>
+              <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-semibold text-red-700">
+                Tidak Tersedia
+              </span>
+              {project.takenBy && project.takenBy.namaTim && (
+                <span className="ml-2 text-sm text-red-600">
+                  (diambil oleh tim {project.takenBy.namaTim})
+                </span>
+              )}
+              {project.pendingGroupsCount >= 3 && (
+                <span className="ml-2 text-sm text-red-600">
+                  (telah mendapatkan 3 request dalam 1 waktu)
+                </span>
+              )}
+            </>
+          )}
+        </div>
 
         {/* GRID */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* LEFT COLUMN */}
           <div className="md:col-span-1">
             <h3 className="mb-2 font-semibold text-gray-800">Nama Anggota Tim</h3>
-            <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
+            <ul className="list-inside list-none space-y-1 text-sm text-gray-600">
 
               {/* 🔥 Ketua dulu */}
               {project.ketua && (
-                <li className="font-semibold">
-                  {project.ketua.name} <span className="text-blue-600 text-xs">(Ketua)</span>
+                <li className="text-gray-600">
+                  {project.ketua.name} <span className="text-gray-600">(Ketua)</span>
                 </li>
               )}
 
@@ -101,7 +127,7 @@ export default function ProjectCardModal({
             </ul>
 
             <h3 className="mt-6 mb-2 font-semibold text-gray-800">Dosen Pembimbing</h3>
-            <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
+            <ul className="list-inside list-none space-y-1 text-sm text-gray-600">
               {project.dosen ? (
                 <li>{project.dosen.name || project.dosen.email}</li>
               ) : (

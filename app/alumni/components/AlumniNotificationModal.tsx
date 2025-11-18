@@ -47,11 +47,28 @@ export default function AlumniNotificationModal({
       .finally(() => setLoading(false));
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-start px-4 pt-10 sm:pt-20 pb-20">
-      <div className="bg-white w-full max-w-4xl rounded-xl shadow-lg relative">
+      <div
+        className={`fixed inset-0 z-50 flex justify-center items-center px-4
+          transition-opacity duration-200
+          ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+        `}
+      >
+      {/* BACKDROP – Fade duluan */}
+      <div
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm
+          transition-opacity duration-200
+          ${isOpen ? "opacity-100" : "opacity-0"}
+        `}
+      />
+
+      {/* MODAL BOX – Animasi scale + fade menyusul */}
+      <div
+        className={`bg-white w-full max-w-4xl rounded-xl shadow-lg relative
+          transition-all duration-300 ease-out
+          ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}
+        `}
+      >
         {/* Header */}
         <div className="p-4 sm:p-6 pb-2 flex justify-between items-center">
           <h2 className="text-lg font-medium text-gray-800">Notification</h2>

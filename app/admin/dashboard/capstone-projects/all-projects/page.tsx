@@ -19,6 +19,12 @@ export interface ProjectData {
   dosen?: any;
   proposalUrl?: string;
   hasil?: string[];
+  takenBy?: {
+    namaTim?: string;
+    ketua?: any;
+    anggota?: any[];
+  };
+  pendingGroupsCount: number;
 }
 
 export default function Page() {

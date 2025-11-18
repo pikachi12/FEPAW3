@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "react-feather";
+import { X, Hash, Grid, Calendar, User, Users } from "react-feather";
 import toast from "react-hot-toast";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -59,8 +59,29 @@ export default function TeamCardModal({ isOpen, onClose, team }: TeamCardModalPr
   };
 
   return createPortal(
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-xl w-full max-w-2xl shadow-lg relative p-6" onClick={e => e.stopPropagation()}>
+  <div
+    className={`fixed inset-0 z-50 flex items-center justify-center px-4
+      transition-opacity duration-200
+      ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+    `}
+    onClick={onClose}
+  >
+        {/* BACKDROP */}
+        <div
+          className={`absolute inset-0 bg-black/40 backdrop-blur-sm
+            transition-opacity duration-200
+            ${isOpen ? "opacity-100" : "opacity-0"}
+          `}
+        />
+
+        {/* MODAL BOX */}
+        <div
+          className={`relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg bg-white p-8 shadow-xl
+            transition-all duration-300 ease-out
+            ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}
+          `}
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -76,31 +97,54 @@ export default function TeamCardModal({ isOpen, onClose, team }: TeamCardModalPr
         <div className="rounded-xl p-5">
           <div className="space-y-3 text-sm">
             <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
-              <span className="font-medium w-32 text-gray-500">Tema</span>
-              <span className="text-gray-800">{team.tema || "-"}</span>
+              <span className="flex items-center gap-2 font-normal text-gray-500 mb-1 sm:mb-0">
+                <Hash size={18} className="text-gray-500" />
+                <span className="ml-1">Tema</span>
+              </span>
+              <span className="text-gray-800 font-normal">{team.tema || "-"}</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
-              <span className="font-medium w-32 text-gray-500">Nama Tim</span>
-              <span className="text-gray-800">{team.namaTim || "-"}</span>
+              <span className="flex items-center gap-2 font-normal text-gray-500 mb-1 sm:mb-0">
+                <Grid size={18} className="text-gray-500" />
+                <span className="ml-1">Nama Tim</span>
+              </span>
+              <span className="text-gray-800 font-normal">{team.namaTim || "-"}</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
-              <span className="font-medium w-32 text-gray-500">Tahun</span>
-              <span className="text-gray-800">{team.tahun || "-"}</span>
+              <span className="flex items-center gap-2 font-normal text-gray-500 mb-1 sm:mb-0">
+                <Calendar size={18} className="text-gray-500" />
+                <span className="ml-1">Tahun</span>
+              </span>
+              <span className="text-gray-800 font-normal">{team.tahun || "-"}</span>
             </div>
 
-            <div className="flex gap-3 items-start">
-              <span className="font-medium w-32 text-gray-500">Nama Ketua</span>
-              <span className="text-gray-800 leading-relaxed">
-                {(team.ketua?.name && team.ketua.name.trim() !== "" ? team.ketua.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{(team.ketua?.nim && team.ketua.nim.trim() !== "" ? team.ketua.nim : "-")}</span><span className="text-gray-500">)</span>
+            <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+              <span className="flex items-center gap-2 font-normal text-gray-500 mb-1 sm:mb-0">
+                <User size={18} className="text-gray-500" />
+                <span className="ml-1">Nama Ketua</span>
+              </span>
+              <span className="text-gray-800 font-normal leading-relaxed">
+                {(team.ketua?.name && team.ketua.name.trim() !== "" ? team.ketua.name : "-")}
+                <span className="hidden md:inline text-gray-500"> (</span>
+                <span className="hidden md:inline text-gray-500">{(team.ketua?.nim && team.ketua.nim.trim() !== "" ? team.ketua.nim : "-")}</span>
+                <span className="hidden md:inline text-gray-500">)</span>
               </span>
             </div>
 
-            <div className="flex gap-3 items-start">
-              <span className="font-medium w-32 text-gray-500">Nama Anggota</span>
-              <div className="text-gray-800 leading-relaxed space-y-1">
+            <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 sm:items-start"> 
+              <span className="flex items-center gap-2 font-normal text-gray-500 mb-1 sm:mb-0">
+                <Users size={18} className="text-gray-500" />
+                <span className="ml-1">Nama Anggota</span>
+              </span>
+              <div className="text-gray-800 font-normal leading-relaxed space-y-1">
                 {team.anggota && team.anggota.length > 0 ? (
                   team.anggota.map((member, idx) => (
-                    <p key={idx}>{member.name} <span className="text-gray-500">(</span><span className="text-gray-500">{member.nim}</span><span className="text-gray-500">)</span></p>
+                    <p key={idx}>
+                      {member.name}
+                      <span className="hidden md:inline text-gray-500"> (</span>
+                      <span className="hidden md:inline text-gray-500">{member.nim}</span>
+                      <span className="hidden md:inline text-gray-500">)</span>
+                    </p>
                   ))
                 ) : (
                   <p>-</p>
@@ -108,10 +152,16 @@ export default function TeamCardModal({ isOpen, onClose, team }: TeamCardModalPr
               </div>
             </div>
 
-            <div className="flex gap-3 items-start">
-              <span className="font-medium w-32 text-gray-500">Dosen Pembimbing</span>
-              <span className="text-gray-800 leading-relaxed">
-                {(team.dosen?.name && team.dosen.name.trim() !== "" ? team.dosen.name : "-")} <span className="text-gray-500">(</span><span className="text-gray-500">{('nip' in team.dosen && typeof team.dosen.nip === 'string' && team.dosen.nip.trim() !== "" ? team.dosen.nip : "-")}</span><span className="text-gray-500">)</span>
+            <div className="flex flex-col sm:flex-row gap-1 sm:gap-3">
+              <span className="flex items-center gap-2 font-normal text-gray-500 mb-1 sm:mb-0">
+                <User size={18} className="text-gray-500" />
+                <span className="ml-1">Dosen Pembimbing</span>
+              </span>
+              <span className="text-gray-800 font-normal leading-relaxed">
+                {(team.dosen?.name && team.dosen.name.trim() !== "" ? team.dosen.name : "-")}
+                <span className="hidden md:inline text-gray-500"> (</span>
+                <span className="hidden md:inline text-gray-500">{('nip' in team.dosen && typeof team.dosen.nip === 'string' && team.dosen.nip.trim() !== "" ? team.dosen.nip : "-")}</span>
+                <span className="hidden md:inline text-gray-500">)</span>
               </span>
             </div>
           </div>

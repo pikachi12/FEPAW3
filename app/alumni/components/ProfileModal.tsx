@@ -74,17 +74,31 @@ export default function ProfileModal({ isOpen, onClose, onAdd, onReport }: Profi
       }
     };
 
-    
-
     fetchCapstoneData();
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl shadow-lg relative p-6">
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 px-4
+        transition-opacity duration-200
+        ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+      `}
+    >
+      {/* BACKDROP – Fade duluan */}
+      <div
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm
+          transition-opacity duration-200
+          ${isOpen ? "opacity-100" : "opacity-0"}
+        `}
+      />
 
+      {/* MODAL BOX – Animasi scale + fade menyusul */}
+      <div
+        className={`bg-white rounded-xl w-full max-w-2xl shadow-lg relative p-6
+          transition-all duration-300 ease-out
+          ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}
+        `}
+      >
         {/* Close Button */}
         <button
           onClick={onClose}

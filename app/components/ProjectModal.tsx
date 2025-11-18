@@ -111,14 +111,14 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="md:col-span-1">
             <h3 className="mb-2 font-semibold text-gray-800">Nama Anggota Tim</h3>
-            <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
+            <ul className="list-inside list-none space-y-1 text-sm text-gray-600">
               {project.teamMembers.map((member, index) => (
                 <li key={index}>{member}</li>
               ))}
             </ul>
 
             <h3 className="mt-6 mb-2 font-semibold text-gray-800">Dosen Pembimbing</h3>
-            <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
+            <ul className="list-inside list-none space-y-1 text-sm text-gray-600">
               {project.supervisors.map((supervisor, index) => (
                 <li key={index}>{supervisor}</li>
               ))}
@@ -143,14 +143,6 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               )}
             </p>
 
-            <h3 className="mb-2 font-semibold text-gray-800">Kata Kunci</h3>
-            <div className="mb-4 flex flex-wrap gap-2">
-              {project.keywords.map((keyword, index) => (
-                <span key={index} className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700">
-                  {keyword}
-                </span>
-              ))}
-            </div>
 
             <h3 className="mb-2 font-semibold text-gray-800">Hasil</h3>
             {project.hasil && project.hasil.length > 0 ? (
