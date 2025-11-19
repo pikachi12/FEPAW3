@@ -61,7 +61,7 @@ export default function ProjectCardModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl max-height-[90vh] overflow-y-auto rounded-lg bg-white p-8 shadow-xl"
+        className="relative w-[90vw] max-w-md max-h-[80vh] overflow-y-auto rounded-lg bg-white p-4 shadow-xl md:w-full md:max-w-4xl md:max-h-[90vh] md:p-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
